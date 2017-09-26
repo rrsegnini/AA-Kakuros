@@ -167,36 +167,6 @@ def getSum(array,row,column,arraylength,down): #position is an array of two elem
 
 
 
-def kakuroSolved(array):
-    arrayL = len(array)
-    for x in range(arrayL):
-        for y in range(arrayL):
-            if array[x][y] == -1:
-                return False
-
-    for i in range(arrayL):
-        for j in range(arrayL):
-            if isinstance(array[i][j],list):
-                if array[i][j][0] != 0:
-                    getSum(array, i+1, j, arrayL,True)
-                elif array[i][j][1] != 0:
-                    getSum(array, i, j+1, arrayL,False)
-
-
-    return True
-
-
-
-def solveK(_kakuro,_sumNumber):
-
-    if not kakuroSolved(_kakuro):
-        return True
-
-
-    print("Not finished")
-
-
-
 def getNumberUp(kakuroM,position):  #returns an integer, moves up to get the number
 
     contRow = position[0]
@@ -250,11 +220,53 @@ def solve(_kakuro,position ): #position is an array with to elements, i,j.
         kakuro[position]
 '''
 
-printMatrix(createEmptyMatrix())
 
-if solveK(kakuroExample,10):
-    print("HOLA")
+kakuroExample = [[0,0,[3,0],[4,0],0],
+                 [0,[5,4],-1,-1,0],
+                 [[0,7],-1,-1,-1,0],
+                 [0,-1,0,0,0],
+                 [0,0,0,0,0]]
+
+kakuroExampleSolved = [[0,0,[3,0],[4,0],0],
+                 [0,[5,4],1,3,0],
+                 [[0,7],4,2,1,0],
+                 [0,1,0,0,0],
+                 [0,0,0,0,0]]
 
 
-arrayPrueba = [[0,45],1,2,3,4,5,6,7,8,9]
-print (getSum(arrayPrueba,0,1,len(arrayPrueba),False))
+def getSum(array,row,column,arraylength,down): #position is an array of two elements
+    sum = 0
+    if down:
+        while row <= arraylength and array[row][column] != 0 \
+                and array[row][column] != -1 and not isinstance(array[row][column],list):
+            sum += array[row][column]
+            row += 1
+    else:
+        while column <= arraylength and array[row][column] != 0 \
+                and array[row][column] != -1 and not isinstance(array[row][column],list):
+            sum += array[row][column]
+            column += 1
+
+    return sum
+
+
+def isKakuroSolved(array):
+    arrayL = len(array)
+    for i in range(arrayL):
+        for j in range(arrayL):
+            if isinstance(array[i][j],list):
+                if array[i][j][0] != 0:
+                    #revisa las sumas
+                    if (getSum(array,i+1,j,arrayL,True)) != array[i][j][0]:
+                        return False
+                if array[i][j][1] != 0:
+                    if (getSum(array,i,j+1,arrayL,False)) != array[i][j][1]:
+                        return False
+
+    return True
+
+
+if isKakuroSolved(kakuroExampleSolved):
+    print("KAKURO SOLUCIONADO")
+
+
