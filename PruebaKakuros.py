@@ -48,7 +48,7 @@ def sumaAleatoria(n):
         #print (lista_numeros[num])
 
 
-sumaAleatoria(4)
+
         
 
 
@@ -63,6 +63,7 @@ CONSTANTS DECLARATION
 '''
 
 BLACK_SPACE = -25
+BLANK_SPACE = 0
 
 # print (random.randint(0,9))
 
@@ -386,11 +387,11 @@ def solve(kakuro):
 
 #if isKakuroSolved(kakuroExampleSolved):
 #    print("HOLAAAAAAA")
-
+'''
 if (solve(kakuroExample)):
     print("solucionado")
 
-
+'''
 
 
 
