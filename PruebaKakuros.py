@@ -141,29 +141,33 @@ def sumaAleatoria(n):
 def getNum():
     num = random.randint(0,45)
     return num
-
-#crearMatriz()
-
 kakuroExample = [[0,0,[3,0],[4,0],0],
                  [0,[5,4],-1,-1,0],
                  [[0,7],-1,-1,-1,0],
                  [0,-1,0,0,0],
                  [0,0,0,0,0]]
 
+kakuroExampleSolved = [[0,0,[3,0],[4,0],0],
+                 [0,[5,4],1,3,0],
+                 [[0,7],4,2,1,0],
+                 [0,1,0,0,0],
+                 [0,0,0,0,0]]
+
 
 def getSum(array,row,column,arraylength,down): #position is an array of two elements
     sum = 0
     if down:
-        while row <= arraylength and array[row][column] != 0 and not isinstance(array[row][column]):
+        while row <= arraylength and array[row][column] != 0 \
+                and array[row][column] != BLANK_SPACE and not isinstance(array[row][column],list):
             sum += array[row][column]
             row += 1
     else:
-        while column <= arraylength and array[row][column] != 0 and not isinstance(array[row][column]):
+        while column <= arraylength and array[row][column] != 0 \
+                and array[row][column] != -BLANK_SPACE and not isinstance(array[row][column],list):
             sum += array[row][column]
             column += 1
 
     return sum
-
 
 
 
@@ -192,64 +196,55 @@ def getNumberLeft(kakuroM,position): #returns an integer, moves left
     return BLACK_SPACE
 
 
-def getValues(kakuroM,position):
-    sumNumUp = getNumberUp(kakuroM,position)
-    sumNumLeft = getNumberLeft(kakuroM,position)
-    valuesDictionary = {3:{1,2},4:{1,3},5:[1,2,3,4]}
 
-    if sumNumLeft != BLACK_SPACE and sumNumUp != BLACK_SPACE:
-        #quiere decir que es una interseccion,por esta razon hay menos posibilidades de colocar un numero ahi
+def numberRepeated(number,kakuroM,position):
+    contRow = position[0]
+    contCol = position[1]
+    while contRow >= 0:
+        if not isinstance(kakuroM[contRow][contCol], list):
+            if(kakuroM[contRow][contCol]) == number:
+                return True
+        else:
+            break
 
 
+    contRow = position[0]
+    contCol = position[1]
+    while contCol >= 0:
+        if not isinstance(kakuroM[contRow][contCol], list):
+            if(kakuroM[contRow][contCol]) == number:
+                return True
+        else:
+            break
 
-        x = 10
+    contRow = position[0]
+    contCol = position[1]
+    while contCol <= len(kakuroM):
+        if not isinstance(kakuroM[contRow][contCol], list):
+            if(kakuroM[contRow][contCol]) == number:
+                return True
+        else:
+            break
+        contCol += 1
+
+    contRow = position[0]
+    contCol = position[1]
+    while contRow <= 0:
+        if not isinstance(kakuroM[contRow][contCol], list):
+            if(kakuroM[contRow][contCol]) == number:
+                return True
+        else:
+            break
+        contRow += 1
+
 
 
 
 '''
+La funcion que revisa si esta solucionado, es simplemente encontrar un array con 2 elementos.
+Revisar si para ekl primero la suma da el numero que es y si no es falso. LISTO
 
-def solve(_kakuro,position ): #position is an array with to elements, i,j.
-    if not kakuroSolved(_kakuro):
-        return True
-    else:
-
-        values = [calculate possible legal values for that field]
-        for value in values:
-            kakuro[position] = value
-            solve(_kakuro)
-        kakuro[position]
 '''
-
-
-kakuroExample = [[0,0,[3,0],[4,0],0],
-                 [0,[5,4],-1,-1,0],
-                 [[0,7],-1,-1,-1,0],
-                 [0,-1,0,0,0],
-                 [0,0,0,0,0]]
-
-kakuroExampleSolved = [[0,0,[3,0],[4,0],0],
-                 [0,[5,4],1,3,0],
-                 [[0,7],4,2,1,0],
-                 [0,1,0,0,0],
-                 [0,0,0,0,0]]
-
-
-def getSum(array,row,column,arraylength,down): #position is an array of two elements
-    sum = 0
-    if down:
-        while row <= arraylength and array[row][column] != 0 \
-                and array[row][column] != -1 and not isinstance(array[row][column],list):
-            sum += array[row][column]
-            row += 1
-    else:
-        while column <= arraylength and array[row][column] != 0 \
-                and array[row][column] != -1 and not isinstance(array[row][column],list):
-            sum += array[row][column]
-            column += 1
-
-    return sum
-
-
 def isKakuroSolved(array):
     arrayL = len(array)
     for i in range(arrayL):
@@ -266,7 +261,141 @@ def isKakuroSolved(array):
     return True
 
 
+'''
+
+def solve(_kakuro, _position, _options ): #position is an array with to elements, i,j.
+                                        #options is an array of the remaining numbers,
+                                        #if one is eliminated in the _kauro, then its added back to the 
+                                        #options array
+    if isKakuroSolved(_kakuro):
+        return True
+    else:
+        values = [calculate possible legal values for that field]
+        valuesN = [1,2,3,4,5,6,7,8,9]
+        for value in valuesN:
+            kakuro[position] = value
+            solve(_kakuro)
+        kakuro[position]
+'''
+
+def changeValues(num,values):
+    if (num == 0):
+        return values
+    nvalues = []
+    for i in range(len(values)-1):
+        value =  values[i]
+        if value < num:
+            nvalues.append(value)
+
+    return nvalues
+
+def getPosition(kakuro):
+    while True:
+        row = random.randint(0, len(kakuro)-1)
+        column = random.randint(0, len(kakuro)-1)
+        if not isinstance(kakuro[row][column],list) and kakuro[row][column] == BLANK_SPACE:
+            return [row,column]
+
+def noEmptySpaces(array):
+    arrayL = len(array)
+    for i in range(arrayL):
+        for j in range(arrayL):
+            if not isinstance(array[i][j], list) and array[i][j] == BLANK_SPACE:
+                return False
+
+    return True
+
+
+def solve(kakuro):
+
+    if isKakuroSolved(kakuro):
+        return True
+    elif noEmptySpaces(kakuro):
+        return False
+    else:
+        position = getPosition(kakuro)
+        row = position[0]
+        column = position[1]
+        if kakuro[row][column] == BLANK_SPACE:
+            num1 = getNumberLeft(kakuro,position)
+            num2 = getNumberUp(kakuro,position)
+            values = [1,2,3,4,5,6,7,8,9]
+            if num1 != -25 and num2 != -25:
+                values2 = changeValues(num1, values)
+                values3 = changeValues(num2, values2)
+            elif num1 == -25 and num2 != -25:
+                values3 = changeValues(num2, values)
+            else:
+                values3 = values
+
+            randomValue = random.choice(values3)
+             '''   
+            for i in range(len(values3)-1):
+                kakuro[row][column] = values[i]
+                if solve(kakuro):
+                    return True
+                    
+            '''
+            while len(values3) != 0:
+
+        return False
+
+
+
+
+
+
+
+#printMatrix(createEmptyMatrix())
+
+#if solveK(kakuroExample,10):
+#    print("HOLA")
+
+
+#arrayPrueba = [[0,45],1,2,3,4,5,6,7,8,9]
+#print (getSum(arrayPrueba,0,1,len(arrayPrueba),False))
+
+print(getNumberUp(kakuroExample,[1,2]))
+print(getNumberLeft(kakuroExample,[1,2]))
+
+
+
 if isKakuroSolved(kakuroExampleSolved):
-    print("KAKURO SOLUCIONADO")
+    print("HOLAAAAAAA")
+
+if (solve(kakuroExample)):
+    print("solucionado")
+
+
+
+
+
+
+
+
+
+#####Algoritmo recibe un numero (del 3 al 45) y un entero que es la cantidad
+##### de numeros que sumados pueden dar este
+# numbers used es una lista de listas con los numeros ya utilizados. Si alguno
+
+def getOptionsGroup(_num,_spaces,numbersUsed):
+    numbersGroup = [1,2,3,4,5,6,7,8,9]
+    solutionSet = []
+    sum = _num
+    spaceCounter = 0 #cuando sea igual a los espacios el algoritmo termina
+    pos = 0
+    while spaceCounter < _spaces and len(numbersGroup) != 0:
+        e = numbersGroup[pos]
+        if (sum + e) <= sum:
+            sum += e
+
+        numbersGroup.remove(e)
+
+
+
+
+
+
+
 
 
