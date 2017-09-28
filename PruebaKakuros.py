@@ -306,8 +306,22 @@ def noEmptySpaces(array):
     return True
 
 
-def solve(kakuro):
+def getNewValues(num1,num2,values):
+    values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    if num1 != -25 and num2 != -25:
+        values2 = changeValues(num1, values)
+        values3 = changeValues(num2, values2)
+    elif num1 == -25 and num2 != -25:
+        values3 = changeValues(num2, values)
+    else:
+        values3 = values
 
+    return values3
+
+
+def solve(kakuro):
+    printMatrix(kakuro)
+    print("MATRIZZ")
     if isKakuroSolved(kakuro):
         return True
     elif noEmptySpaces(kakuro):
@@ -319,24 +333,34 @@ def solve(kakuro):
         if kakuro[row][column] == BLANK_SPACE:
             num1 = getNumberLeft(kakuro,position)
             num2 = getNumberUp(kakuro,position)
-            values = [1,2,3,4,5,6,7,8,9]
-            if num1 != -25 and num2 != -25:
-                values2 = changeValues(num1, values)
-                values3 = changeValues(num2, values2)
-            elif num1 == -25 and num2 != -25:
-                values3 = changeValues(num2, values)
-            else:
-                values3 = values
+            values = getNewValues(num1,num2,[1,2,3,4,5,6,7,8,9])
+            valuesUsed = []
+            '''
+            while len(valuesUsed) <= len(values):
+                while True:
+                    randomValue = random.choice(values)
+                    if not numberRepeated(randomValue,kakuro,position):
+                        break
+                    elif randomValue not in valuesUsed:
+                        valuesUsed.append(randomValue)
 
-            randomValue = random.choice(values3)
-             '''   
-            for i in range(len(values3)-1):
-                kakuro[row][column] = values[i]
+                kakuro[row][column] = randomValue
+                valuesUsed.append(randomValue)
                 if solve(kakuro):
                     return True
-                    
             '''
-            while len(values3) != 0:
+            while len(valuesUsed) != len(values):
+                randomValue = random.choice(values)
+                if not numberRepeated(randomValue, kakuro, position):
+                    kakuro[row][column] = randomValue
+                    valuesUsed.append(randomValue)
+                    if solve(kakuro):
+                        return True
+                elif randomValue not in valuesUsed:
+                        valuesUsed.append(randomValue)
+
+
+
 
         return False
 
@@ -355,41 +379,18 @@ def solve(kakuro):
 #arrayPrueba = [[0,45],1,2,3,4,5,6,7,8,9]
 #print (getSum(arrayPrueba,0,1,len(arrayPrueba),False))
 
-print(getNumberUp(kakuroExample,[1,2]))
-print(getNumberLeft(kakuroExample,[1,2]))
+#print(getNumberUp(kakuroExample,[1,2]))
+#print(getNumberLeft(kakuroExample,[1,2]))
 
 
 
-if isKakuroSolved(kakuroExampleSolved):
-    print("HOLAAAAAAA")
+#if isKakuroSolved(kakuroExampleSolved):
+#    print("HOLAAAAAAA")
 
 if (solve(kakuroExample)):
     print("solucionado")
 
 
-
-
-
-
-
-
-
-#####Algoritmo recibe un numero (del 3 al 45) y un entero que es la cantidad
-##### de numeros que sumados pueden dar este
-# numbers used es una lista de listas con los numeros ya utilizados. Si alguno
-
-def getOptionsGroup(_num,_spaces,numbersUsed):
-    numbersGroup = [1,2,3,4,5,6,7,8,9]
-    solutionSet = []
-    sum = _num
-    spaceCounter = 0 #cuando sea igual a los espacios el algoritmo termina
-    pos = 0
-    while spaceCounter < _spaces and len(numbersGroup) != 0:
-        e = numbersGroup[pos]
-        if (sum + e) <= sum:
-            sum += e
-
-        numbersGroup.remove(e)
 
 
 
