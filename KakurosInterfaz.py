@@ -1,15 +1,25 @@
 from tkinter import *
-from PruebaKakuros import * 
+from PruebaKakuros import *
+import copy
 large_font = ('Verdana',50)
 
 class Application(Frame):
 
-
+    def callback(self,v,  *args):
+        
+        print (v.get(), " asfasf")
+        
+    def entryupdate(self, sv, i, casillas):
+        if int(sv.get()) > 9:
+            casillas[i].config(bg="red")
+        elif int(sv.get()) > 0 and int(sv.get()) < 9:
+            casillas[i].config(bg="white")
+            
 
     def createWidgets(self):
         self.createGraphicKakuro()
         
-
+    
     def createGraphicKakuro(self):
         photoBLACK = PhotoImage(file="BLACK.png")
         photoSLASH = PhotoImage(file="SLASH.png")
@@ -29,6 +39,9 @@ class Application(Frame):
         placeY=50
         v = StringVar()
         listaCASILLAS=[]
+        aProxy = []  
+        self.variablesEntry = []
+        
         for i in range(0, len(kakuroExample)):
             placeX = 0
             for j in range(0, len(kakuroExample[0])):
@@ -48,71 +61,64 @@ class Application(Frame):
                         labelNUM = Label(text=kakuroExample[i][j][1], font=("Helvetica", 13), fg="white", bg="black")
                         labelNUM.place(x=placeX+52, y=placeY+20)
                 else:
-                    self.CASILLA = Entry(width=2,font=large_font, justify=CENTER)#, textvariable=v)
+                    sizeVars = len(self.variablesEntry)
+                    self.variablesEntry.append(StringVar())
+                    self.variablesEntry[sizeVars].trace("w", lambda name, index, mode, var=self.variablesEntry[sizeVars], sizeVars=sizeVars:
+                              self.entryupdate(var, sizeVars,listaCASILLAS))
+                    
+                    
+                    #v = StringVar()
+                    #v.trace("w", lambda *args:self.callback(v))
+                    self.CASILLA = Entry(width=2,font=large_font, justify=CENTER, textvariable = self.variablesEntry[sizeVars])
                     listaCASILLAS+=[self.CASILLA]
+                    
+                    self.variablesEntry[sizeVars].trace("w", lambda name, index, mode, var=self.variablesEntry[sizeVars], sizeVars=sizeVars:
+                              self.entryupdate(var, sizeVars, listaCASILLAS))
+                    
                     self.CASILLA.place(x=placeX, y=placeY)
                 placeX+=90
             placeY+=85
 
+        #self.verificarButton = Button(text="Verificar solución", font=("Helvetica", 13),
+                                      #command=lambda:self.verificarSolucion(listaCASILLAS,kakuroExample))
         self.verificarButton = Button(text="Verificar solución", font=("Helvetica", 13),
-                                      command=lambda:self.verificarSolucion(listaCASILLAS,kakuroExample))
+                                      command=lambda:self.verificarSolucion(self.variablesEntry,kakuroExample))
         self.verificarButton.place(x=10, y=placeY+10)
         
         
         self.resolverButton = Button(text="Resolver (backtracking)", font=("Helvetica", 13))
         self.resolverButton.place(x=200, y=placeY+10)
-        update()
         
+     
     def verificarSolucion(self, listaCASILLAS, kakuro):
-        #s = v.get()
+
         listaSOLUCIONES=[]
-        for i in range(0, len(listaCASILLAS)):
-            listaSOLUCIONES+=[listaCASILLAS[i].get()]
-            #print(listaCASILLAS[i].get())
+        copiaKakuroOriginal = copy.deepcopy(kakuro)
+
         cont = 0  
         for x in range(0, len(kakuro)):
             for y in range(0, len(kakuro[0])):
                 if kakuro[x][y] == -1:
-                    kakuro[x][y] = int(listaSOLUCIONES[cont])
+                    copiaKakuroOriginal[x][y] = int(listaCASILLAS[cont].get())
                     cont+=1
-        print(kakuroExampleSolved)
-        print(kakuro)
-        if kakuro == kakuroExampleSolved:
-            print("SON IGUALES")
-        if isKakuroSolved(kakuro):
-            print("YES")
+ 
+        print(copiaKakuroOriginal)
+        
+        if isKakuroSolved(copiaKakuroOriginal):
+            messagebox.showinfo (
+            "Felicidades",
+            "Solución correcta"
+            )
         else:
+            messagebox.showerror (
+            "Incorrecto",
+            "Solución incorrecta"
+            )
             print("NOP")
                     
-     
-    '''
-    La funcion que revisa si esta solucionado, es simplemente encontrar un array con 2 elementos.
-    Revisar si para ekl primero la suma da el numero que es y si no es falso. LISTO
 
-    '''
-    '''  
-    def isKakuroSolved(self, array):
-        arrayL = len(array)
-        for i in range(arrayL):
-            for j in range(arrayL):
-                if isinstance(array[i][j],list):
-                    if array[i][j][0] != 0:
-                        #revisa las sumas
-                        if (getSum(array,i+1,j,arrayL,True)) != array[i][j][0]:
-                            print ("Nop")
-                            return False
-                    if array[i][j][1] != 0:
-                        if (getSum(array,i,j+1,arrayL,False)) != array[i][j][1]:
-                            print ("Nop")
-                            return False
-        print ("Yes")
-        return True
-    '''  
         
     def __init__(self, master=None):
-        #frame = Frame(width=768, height=576, bg="", colormap="new")
-        #frame.pack()
-
         Frame.__init__(self, master,width=600, height=600)
         self.pack()
         self.createWidgets()

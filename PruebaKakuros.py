@@ -142,6 +142,7 @@ def sumaAleatoria(n):
 def getNum():
     num = random.randint(0,45)
     return num
+'''
 kakuroExample = [[0,0,[3,0],[4,0],0],
                  [0,[5,4],-1,-1,0],
                  [[0,7],-1,-1,-1,0],
@@ -154,7 +155,7 @@ kakuroExampleSolved = [[0,0,[3,0],[4,0],0],
                  [0,1,0,0,0],
                  [0,0,0,0,0]]
 
-
+'''
 def getSum(array,row,column,arraylength,down): #position is an array of two elements
     sum = 0
     if down:
