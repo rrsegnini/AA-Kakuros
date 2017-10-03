@@ -156,6 +156,7 @@ kakuroExampleSolved = [[0,0,[3,0],[4,0],0],
                  [0,0,0,0,0]]
 
 '''
+
 def getSum(array,row,column,arraylength,down): #position is an array of two elements
     sum = 0
     if down:
@@ -165,7 +166,7 @@ def getSum(array,row,column,arraylength,down): #position is an array of two elem
             row += 1
     else:
         while column <= arraylength and array[row][column] != 0 \
-                and array[row][column] != -BLANK_SPACE and not isinstance(array[row][column],list):
+                and array[row][column] != BLANK_SPACE and not isinstance(array[row][column],list):
             sum += array[row][column]
             column += 1
 
@@ -191,7 +192,7 @@ def getNumberLeft(kakuroM,position): #returns an integer, moves left
     contCol = position[1]
     while contCol >= 0:
         if isinstance(kakuroM[contRow][contCol],list):
-            return kakuroM[contRow][contCol][0]
+            return kakuroM[contRow][contCol][1]
         elif kakuroM[contRow][contCol] == 0:
             return BLACK_SPACE #-10
         contCol -= 1
@@ -203,26 +204,28 @@ def numberRepeated(number,kakuroM,position):
     contRow = position[0]
     contCol = position[1]
     while contRow >= 0:
-        if not isinstance(kakuroM[contRow][contCol], list):
+        if not isinstance(kakuroM[contRow][contCol], list) or (kakuroM[contRow][contCol]) == 0:
             if(kakuroM[contRow][contCol]) == number:
                 return True
         else:
             break
 
+        contRow -= 1
 
     contRow = position[0]
     contCol = position[1]
     while contCol >= 0:
-        if not isinstance(kakuroM[contRow][contCol], list):
+        if not isinstance(kakuroM[contRow][contCol], list) or (kakuroM[contRow][contCol]) == 0:
             if(kakuroM[contRow][contCol]) == number:
                 return True
         else:
             break
+        contCol -= 1
 
     contRow = position[0]
     contCol = position[1]
-    while contCol <= len(kakuroM):
-        if not isinstance(kakuroM[contRow][contCol], list):
+    while contCol < len(kakuroM):
+        if not isinstance(kakuroM[contRow][contCol], list) or (kakuroM[contRow][contCol]) == 0 :
             if(kakuroM[contRow][contCol]) == number:
                 return True
         else:
@@ -231,15 +234,15 @@ def numberRepeated(number,kakuroM,position):
 
     contRow = position[0]
     contCol = position[1]
-    while contRow <= 0:
-        if not isinstance(kakuroM[contRow][contCol], list):
+    while contRow < len(kakuroM):
+        if not isinstance(kakuroM[contRow][contCol], list) or (kakuroM[contRow][contCol]) == 0:
             if(kakuroM[contRow][contCol]) == number:
                 return True
         else:
             break
         contRow += 1
 
-
+    return False
 
 
 '''
@@ -284,10 +287,12 @@ def changeValues(num,values):
     if (num == 0):
         return values
     nvalues = []
-    for i in range(len(values)-1):
+    for i in range(len(values)):
         value =  values[i]
         if value < num:
             nvalues.append(value)
+        else:
+            break
 
     return nvalues
 
@@ -306,10 +311,21 @@ def getNextPosition(kakuro,position):
         if (column) == length:
             column = 0
         while column < length:
+            value = kakuro[row][column]
             if kakuro[row][column] == -1:
                 return [row,column]
             column += 1
         row += 1
+
+
+#working better
+def getNextPosition2(kakuro):
+    for i in range(len(kakuro)):
+        for j in range(len(kakuro)):
+            if kakuro[i][j] == -1:
+                return [i,j]
+
+
 
 
 def noEmptySpaces(array):
@@ -321,8 +337,47 @@ def noEmptySpaces(array):
 
     return True
 
-def getNewValues(num1,num2,values):
-    values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+def deleteRepeatedValues(kakuroM,values,position):
+    row = position[0]
+    column = position[1]
+    while row >= 0:
+        if not isinstance(kakuroM[row][column], list) or (kakuroM[row][column]) != 0 or \
+                        (kakuroM[row][column]) != BLANK_SPACE:
+            value = (kakuroM[row][column])
+            if value in values:
+                values.remove(value)
+        else:
+            break
+
+        row -= 1
+
+    row = position[0]
+    column = position[1]
+    while column >= 0:
+        if not isinstance(kakuroM[row][column], list) or (kakuroM[row][column]) != 0 or \
+                        (kakuroM[row][column]) != BLANK_SPACE:
+            value = (kakuroM[row][column])
+            if value in values:
+                values.remove(value)
+        else:
+            break
+        column -= 1
+
+    return values
+
+
+
+#works better
+def deleteRepeatedValues2(kakuroM,values,position):
+    newValues = []
+    for i in range(len(values)):
+        if not numberRepeated(values[i],kakuroM,position):
+            newValues.append(values[i])
+    return newValues
+
+
+def getNewValues(num1,num2,values,position,kakuro):
     if num1 != -25 and num2 != -25:
         values2 = changeValues(num1, values)
         values3 = changeValues(num2, values2)
@@ -331,11 +386,15 @@ def getNewValues(num1,num2,values):
     else:
         values3 = values
 
-    return values3
+
+    newValues = deleteRepeatedValues2(kakuro,values3,position)
+    return newValues
 
 
 def isValueUseful(sum,spaces,value):
     #returns True if these values can be used
+    if (sum/2) == value:
+        return False
     values = [1,2,3,4,5,6,7,8,9]
     index = values.index(value)
     values = values[index:]
@@ -344,8 +403,7 @@ def isValueUseful(sum,spaces,value):
         if(i >= len(values)):
             return False
         num = num - values[i]
-
-    if num in values:
+    if num <= 9:
         return True
     return False
 
@@ -389,101 +447,74 @@ def getSpaces(array,position,right):
             contRow += 1
     return spaces
 
-'''
-FALTA ARREGLARLE LA "PODA" porque dejo de servir con esta nueva version
 
-'''
-def solve(kakuro,position):
+
+
+
+
+def getLowestValue(_sum,_spaces):
+    values = [1,2,3,4,5,6,7,8,9]
+    while True:
+        sum = _sum
+        for i in range(_spaces-1):
+            sum -= values[i]
+
+        if sum <= 9:
+            return values
+        else:
+            values.remove(values[0])
+
+
+
+def getHighestValue(_sum,_spaces):
+    values = [1,2,3,4,5,6,7,8,9]
+    n  = _sum
+    for i in range(_spaces-1):
+        n -= values[i]
+
+    newValues = []
+    for i in range(len(values)):
+        if values[i] <= n:
+            newValues.append(values[i])
+
+
+    return newValues
+
+
+def reviewNewSums(_sum1,_sum2,kakuro,position,values):
+    sum1 = getNewSum(kakuro, position, _sum1, True)
+    sum2 = getNewSum(kakuro, position, _sum2, False)
+
+    # AGREGAR UNA FUNCION QUE TOME LA NUEVA SUMA Y OBTENGA LOS VALORES MAS ALTOS QUE PUEDE TOMAR
+    # DESPUES DE TOMAR ESTOS VALORES,
+
+
+def solveKakuro(kakuro,position):
     #printMatrix(kakuro)
-    #print("MATRIZZ")
+    #print("--------------------------\n------------------\n--------------------------")
+    #kakuro[2][1] == 1 and kakuro[2][2] == 2 and kakuro[2][4] == 9 and kakuro[2][5] == 8
     if isKakuroSolved(kakuro):
         return True
     elif noEmptySpaces(kakuro):
         return False
     else:
-        #position = getPosition(kakuro)
-        position = getNextPosition(kakuro,position)
+        position = getNextPosition2(kakuro)
         row = position[0]
         column = position[1]
-        if kakuro[row][column] == BLANK_SPACE:
-            num1 = getNumberLeft(kakuro,position)
-            num2 = getNumberUp(kakuro,position)
+        num1 = getNumberLeft(kakuro,position)
+        num2 = getNumberUp(kakuro,position)
+        values = getNewValues(num1,num2,[1,2,3,4,5,6,7,8,9],position,kakuro)
 
-            values = getNewValues(num1,num2,[1,2,3,4,5,6,7,8,9]) #solo quita si digamos es 5 el numero
-            #deja del 1 al 4. Pero si el numero al que se tiene que llegar es
-            #22, esta funcion no hace nada. retorna la misma lista del [1...9]
-            valuesUsed = []
-            cont = 0
-            spaces2theRight = 9
-            spacesDown = 9
-            while len(valuesUsed) != len(values):
-                #randomValue = random.choice(values)
-                value = values[cont]
-                #el number repeated es el mas importante (revisa si no se esta repitiendo el numero)
-                if not numberRepeated(value, kakuro, position):
-                    if num1 != 0:
-                        num1 = getNewSum(kakuro,position,num1,True)
-                        spaces2theRight = getSpaces(kakuro,position,True)
-                    if num2 != 0:
-                        num2 = getNewSum(kakuro, position, num2, False)
-                        spacesDown = getSpaces(kakuro,position,False)
+        values = reviewNewSums(num1,num2,kakuro,position,values)
 
+        for i in range(len(values)):
 
-                    if isValueUseful(num1,spaces2theRight,value) and isValueUseful(num2,spacesDown,value):
-                        kakuro[row][column] = value
-                        valuesUsed.append(value)
-                        if solve(kakuro,position):
-                            return True
-                        else:
-                            kakuro[row][column] = BLANK_SPACE
-
-                    if value not in valuesUsed:
-                        valuesUsed.append(value)
-                elif value not in valuesUsed:
-                        valuesUsed.append(value)
-                cont += 1
-
-        return False
-
-
-
-
-def solveBruteForce(kakuro,position):
-    #printMatrix(kakuro)
-    #print("MATRIZZ")
-    if isKakuroSolved(kakuro):
-        return True
-    elif noEmptySpaces(kakuro):
-        return False
-    else:
-        #position = getPosition(kakuro)
-        position = getNextPosition(kakuro,position)
-        row = position[0]
-        column = position[1]
-        if kakuro[row][column] == BLANK_SPACE:
-            num1 = getNumberLeft(kakuro,position)
-            num2 = getNumberUp(kakuro,position)
-
-            values = getNewValues(num1,num2,[1,2,3,4,5,6,7,8,9]) #solo quita si digamos es 5 el numero
-            #deja del 1 al 4. Pero si el numero al que se tiene que llegar es
-            #22, esta funcion no hace nada. retorna la misma lista del [1...9]
-            valuesUsed = []
-            cont = 0
-            while len(valuesUsed) != len(values):
-                #randomValue = random.choice(values)
-                value = values[cont]
-                #el number repeated es el mas importante (revisa si no se esta repitiendo el numero)
-                if not numberRepeated(value, kakuro, position):
-                    kakuro[row][column] = value
-                    valuesUsed.append(value)
-                    if solveBruteForce(kakuro,position):
-                        return True
-                    else:
-                        kakuro[row][column] = BLANK_SPACE
-
-                elif value not in valuesUsed:
-                        valuesUsed.append(value)
-                cont += 1
+            value = values[i]
+            kakuro[row][column] = value
+            if solveKakuro(kakuro,position):
+                return True
+            else:
+                kakuro[row][column] = BLANK_SPACE
 
         return False
 
@@ -492,35 +523,3 @@ def solveBruteForce(kakuro,position):
 
 
 
-#printMatrix(createEmptyMatrix())
-
-#if solveK(kakuroExample,10):
-#    print("HOLA")
-
-
-#arrayPrueba = [[0,45],1,2,3,4,5,6,7,8,9]
-#print (getSum(arrayPrueba,0,1,len(arrayPrueba),False))
-
-#print(getNumberUp(kakuroExample,[1,2]))
-#print(getNumberLeft(kakuroExample,[1,2]))
-
-
-
-#if isKakuroSolved(kakuroExampleSolved):
-#    print("HOLAAAAAAA")
-print(getSpaces(kakuroExample,[1,2],True))
-if (solveBruteForce(kakuroExample,[0,0])):
-    print("solucionado")
-
-def decision(probability):
-    r = random.random()
-    return r < probability
-
-
-
-#kakuro = generateKakuro(10)
-#printMatrix(kakuro)
-##values = [1,2,3,4,5,6,7,8,9]
-#print(len(values))
-#print(values[2:])
-#print(isValueUseful(17,2,8))
