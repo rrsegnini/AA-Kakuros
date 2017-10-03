@@ -296,26 +296,6 @@ def changeValues(num,values):
 
     return nvalues
 
-def getPosition(kakuro):
-    while True:
-        row = random.randint(0, len(kakuro)-1)
-        column = random.randint(0, len(kakuro)-1)
-        if not isinstance(kakuro[row][column],list) and kakuro[row][column] == BLANK_SPACE:
-            return [row,column]
-
-def getNextPosition(kakuro,position):
-    row = position[0]
-    column = position[1]
-    length = len(kakuro)
-    while row < length:
-        if (column) == length:
-            column = 0
-        while column < length:
-            value = kakuro[row][column]
-            if kakuro[row][column] == -1:
-                return [row,column]
-            column += 1
-        row += 1
 
 
 #working better
@@ -336,36 +316,6 @@ def noEmptySpaces(array):
                 return False
 
     return True
-
-
-def deleteRepeatedValues(kakuroM,values,position):
-    row = position[0]
-    column = position[1]
-    while row >= 0:
-        if not isinstance(kakuroM[row][column], list) or (kakuroM[row][column]) != 0 or \
-                        (kakuroM[row][column]) != BLANK_SPACE:
-            value = (kakuroM[row][column])
-            if value in values:
-                values.remove(value)
-        else:
-            break
-
-        row -= 1
-
-    row = position[0]
-    column = position[1]
-    while column >= 0:
-        if not isinstance(kakuroM[row][column], list) or (kakuroM[row][column]) != 0 or \
-                        (kakuroM[row][column]) != BLANK_SPACE:
-            value = (kakuroM[row][column])
-            if value in values:
-                values.remove(value)
-        else:
-            break
-        column -= 1
-
-    return values
-
 
 
 #works better
