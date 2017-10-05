@@ -1,4 +1,6 @@
 from tkinter import *
+from tkinter import messagebox
+import winsound
 from PruebaKakuros import *
 import copy
 large_font = ('Verdana',50)
@@ -10,19 +12,26 @@ class Application(Frame):
         print (v.get(), " asfasf")
         
     def entryupdate(self, sv, i, casillas):
-        if int(sv.get()) > 9:
-            casillas[i].config(bg="red")
-        elif int(sv.get()) > 0 and int(sv.get()) < 9:
-            casillas[i].config(bg="white")
+        try:
+            if int(sv.get()) > 9:
+                casillas[i].config(bg="red")
+            elif int(sv.get()) > 0 and int(sv.get()) < 9:
+                casillas[i].config(bg="white")
+        except ValueError:
+            if sv.get() == '':
+                casillas[i].config(bg="white")
+            else:
+                #casillas[i].config(bg="red", text='')
+                #winsound.Beep(1000, 100)
+                sv.set('')
+                #"Incorrecto",
+                #"Valor inválido"
+                #)
+                #print ("Valor inválido")
+            
             
 
     def createWidgets(self):
-        self.createGraphicKakuro()
-        
-    
-    def createGraphicKakuro(self):
-        photoBLACK = PhotoImage(file="BLACK.png")
-        photoSLASH = PhotoImage(file="SLASH.png")
         kakuroExample = [[0,0,[3,0],[4,0],0],
                  [0,[5,4],-1,-1,0],
                  [[0,7],-1,-1,-1,0],
@@ -34,6 +43,14 @@ class Application(Frame):
                          [[0,7],4,2,1,0],
                          [0,1,0,0,0],
                          [0,0,0,0,0]]
+        
+        self.createGraphicKakuro(kakuroExample)
+        
+    
+    def createGraphicKakuro(self, kakuroPorDesplegar):
+        photoBLACK = PhotoImage(file="BLACK.png")
+        photoSLASH = PhotoImage(file="SLASH.png")
+        
         cont = 0
         placeX = 50
         placeY=50
@@ -41,24 +58,30 @@ class Application(Frame):
         listaCASILLAS=[]
         aProxy = []  
         self.variablesEntry = []
-        
-        for i in range(0, len(kakuroExample)):
-            placeX = 0
-            for j in range(0, len(kakuroExample[0])):
 
-                if kakuroExample[i][j] == 0:
+        kakuroExampleSolved = [[0,0,[3,0],[4,0],0],
+                         [0,[5,4],1,3,0],
+                         [[0,7],4,2,1,0],
+                         [0,1,0,0,0],
+                         [0,0,0,0,0]]
+        
+        for i in range(0, len(kakuroPorDesplegar)):
+            placeX = 0
+            for j in range(0, len(kakuroPorDesplegar[0])):
+
+                if kakuroPorDesplegar[i][j] == 0:
                     labelCASILLA = Label(image=photoBLACK)
                     labelCASILLA.image = photoBLACK
                     labelCASILLA.place(x=placeX, y=placeY)
-                elif isinstance(kakuroExample[i][j], list):
+                elif isinstance(kakuroPorDesplegar[i][j], list):
                     labelCASILLA = Label(image=photoSLASH)
                     labelCASILLA.image = photoSLASH
                     labelCASILLA.place(x=placeX, y=placeY)
-                    if kakuroExample[i][j][0] != 0:
-                        labelNUM = Label(text=str(kakuroExample[i][j][0]), font=("Helvetica", 13), fg="white", bg="black")
+                    if kakuroPorDesplegar[i][j][0] != 0:
+                        labelNUM = Label(text=str(kakuroPorDesplegar[i][j][0]), font=("Helvetica", 13), fg="white", bg="black")
                         labelNUM.place(x=placeX+20, y=placeY+50)
-                    if kakuroExample[i][j][1] != 0:
-                        labelNUM = Label(text=kakuroExample[i][j][1], font=("Helvetica", 13), fg="white", bg="black")
+                    if kakuroPorDesplegar[i][j][1] != 0:
+                        labelNUM = Label(text=kakuroPorDesplegar[i][j][1], font=("Helvetica", 13), fg="white", bg="black")
                         labelNUM.place(x=placeX+52, y=placeY+20)
                 else:
                     sizeVars = len(self.variablesEntry)
@@ -82,14 +105,29 @@ class Application(Frame):
         #self.verificarButton = Button(text="Verificar solución", font=("Helvetica", 13),
                                       #command=lambda:self.verificarSolucion(listaCASILLAS,kakuroExample))
         self.verificarButton = Button(text="Verificar solución", font=("Helvetica", 13),
-                                      command=lambda:self.verificarSolucion(self.variablesEntry,kakuroExample))
+                                      command=lambda:self.verificarSolucion(self.variablesEntry,kakuroPorDesplegar))
         self.verificarButton.place(x=10, y=placeY+10)
         
         
-        self.resolverButton = Button(text="Resolver (backtracking)", font=("Helvetica", 13))
+        self.resolverButton = Button(text="Resolver (backtracking)", font=("Helvetica", 13),
+                                      command=lambda:self.solucionarKakuro(self.variablesEntry,kakuroExampleSolved))
         self.resolverButton.place(x=200, y=placeY+10)
         
-     
+    def solucionarKakuro(self, listaCASILLAS, kakuro):
+        listaSOLUCIONES=[]
+        copiaKakuroOriginal = copy.deepcopy(kakuro)
+
+        cont = 0  
+        for x in range(0, len(kakuro)):
+            for y in range(0, len(kakuro[0])):
+                if kakuro[x][y] == -1:
+                    listaCASILLAS[cont].set(kakuro[x][y])
+                    cont+=1
+        self.createGraphicKakuro(kakuro)
+        print(copiaKakuroOriginal)
+        app.mainloop()
+        #solveBruteForce(copiaKakuroOriginal, [0,0])
+        
     def verificarSolucion(self, listaCASILLAS, kakuro):
 
         listaSOLUCIONES=[]
