@@ -1,9 +1,11 @@
 from tkinter import *
+import tkinter as tk
 from tkinter import messagebox
 import winsound
 from PruebaKakuros import *
 import copy
-large_font = ('Verdana',50)
+large_font = ('Verdana',30)
+
 
 class Application(Frame):
 
@@ -50,8 +52,7 @@ class Application(Frame):
                 [0,[16,0],[4,0],[6,0],0,0,[4,0],[16,0],0,0,0,0,[30,0],[4,0],0,0,0,0,[23,0],[4,0]]]
         print(len(kaks[1]))
 
-        if self.mainWindow():
-            print ("asfa")
+        self.mainWindow()
         #nueva = self.new_window()
         #w = Scale(nueva, from_=10, to=20)
         #w.pack()
@@ -72,23 +73,49 @@ class Application(Frame):
         
     def new_window(self):
         self.newWindow = Toplevel(root)
+        self.canvas = tk.Canvas(self.newWindow, borderwidth=0, background="#ffffff")
+        self.frame = tk.Frame(self.canvas, background="#ffffff")
+        self.vsb = tk.Scrollbar(self.newWindow, orient="vertical", command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=self.vsb.set, width=1999)
+
+        self.vsb.pack(side="right", fill="y")
+        self.canvas.pack(side="left", fill="both", expand=True)
+        self.canvas.create_window((4,4), window=self.frame, anchor="nw", 
+                                  tags="self.frame")
+
+        self.frame.bind("<Configure>", self.onFrameConfigure)
         #self.newFrame = Frame(self.newWindow)
         
-        return self.newWindow
+        return self.frame
     def createKakuro(self, size):
         newKak = crearMatriz(size)
+        kakuroExample = [[0,0,[3,0],[4,0],0],
+                 [0,[5,4],-1,-1,0],
+                 [[0,7],-1,-1,-1,0],
+                 [0,-1,0,0,0],
+                 [0,0,0,0,0]]
         nueva = self.new_window()
-        self.createGraphicKakuro(nueva,newKak) 
+        newKak = kakuro20x20
+        self.createGraphicKakuro(self.frame,newKak) 
         
     def createGraphicKakuro(self,newWin, kakuroPorDesplegar):
-        newWin.config(width=len(kakuroPorDesplegar)*100, height=len(kakuroPorDesplegar)*100)
+        if (len(kakuroPorDesplegar)*70<screen_width) and len(kakuroPorDesplegar)*65 < screen_height:
+            newWin.config(width=len(kakuroPorDesplegar)*70, height=len(kakuroPorDesplegar)*65)#, bg="black")
+            self.canvas.configure(width=len(kakuroPorDesplegar)*70, height=len(kakuroPorDesplegar)*45)
+        else:
+            newWin.config(width=screen_width-200, height=screen_width-800)#, bg="black")
+            self.canvas.configure(width=screen_width-200, height=screen_width-800)
+            
+        scrollbar = Scrollbar(newWin)
+        #scrollbar.pack(side=RIGHT, fill=Y)
         #newWin = self.new_window()
-        photoBLACK = PhotoImage(file="BLACK.png")
-        photoSLASH = PhotoImage(file="SLASH.png")
+        photoBLACK = PhotoImage(file="BLACKsmall.png")
+        photoSLASH = PhotoImage(file="SLASHsmall.png")
         
-        cont = 0
-        placeX = 50
-        placeY=50
+        contX = 0
+        contY = 0
+        placeX = photoBLACK.width()
+        placeY=photoBLACK.width()
         v = StringVar()
         listaCASILLAS=[]
         aProxy = []  
@@ -101,23 +128,30 @@ class Application(Frame):
                          [0,0,0,0,0]]
         
         for i in range(0, len(kakuroPorDesplegar)):
-            placeX = 0
+            placeX = 35*len(kakuroPorDesplegar)/4
+            contX = 0
             for j in range(0, len(kakuroPorDesplegar[0])):
 
                 if kakuroPorDesplegar[i][j] == 0:
-                    labelCASILLA = Label(newWin,image=photoBLACK)
+                    labelCASILLA = Label(newWin,image=photoBLACK,highlightthickness=0, borderwidth=0)
                     labelCASILLA.image = photoBLACK
-                    labelCASILLA.place(x=placeX, y=placeY)
+                    labelCASILLA.grid(row=contY, column=contX)#, sticky=S+W+E+N)
+                    #labelCASILLA.place(x=placeX, y=placeY)
                 elif isinstance(kakuroPorDesplegar[i][j], list):
-                    labelCASILLA = Label(newWin,image=photoSLASH)
+                    labelCASILLA = Label(newWin,image=photoSLASH,highlightthickness=0, borderwidth=0)
                     labelCASILLA.image = photoSLASH
-                    labelCASILLA.place(x=placeX, y=placeY)
+                    labelCASILLA.grid(row=contY, column=contX)
+                    #labelCASILLA.place(x=placeX, y=placeY)
                     if kakuroPorDesplegar[i][j][0] != 0:
-                        labelNUM = Label(newWin,text=str(kakuroPorDesplegar[i][j][0]), font=("Helvetica", 13), fg="white", bg="black")
-                        labelNUM.place(x=placeX+20, y=placeY+50)
+                        labelNUM = Label(newWin,text=str(kakuroPorDesplegar[i][j][0]), font=("Helvetica", 12), fg="white", bg="black",
+                                         anchor=W, borderwidth=0,highlightthickness=0)
+                        #labelNUM.place(x=placeX+8, y=placeY+25)
+                        labelNUM.grid(row=contY, column=contX, sticky=SW)
                     if kakuroPorDesplegar[i][j][1] != 0:
-                        labelNUM = Label(newWin,text=kakuroPorDesplegar[i][j][1], font=("Helvetica", 13), fg="white", bg="black")
-                        labelNUM.place(x=placeX+52, y=placeY+20)
+                        labelNUM = Label(newWin,text=kakuroPorDesplegar[i][j][1], font=("Helvetica", 12), fg="white", bg="black",
+                                         anchor=E, borderwidth=0,highlightthickness=0)
+                        labelNUM.grid(row=contY, column=contX, sticky=NE)
+                        #labelNUM.place(x=placeX+30, y=placeY+8)
                         
                 else:
                     
@@ -135,36 +169,47 @@ class Application(Frame):
                     self.variablesEntry[sizeVars].trace("w", lambda name, index, mode, var=self.variablesEntry[sizeVars], sizeVars=sizeVars:
                               self.entryupdate(var, sizeVars, listaCASILLAS))
                     
-                    self.CASILLA.place(x=placeX, y=placeY)
+                    #self.CASILLA.place(x=placeX, y=placeY)
+                    self.CASILLA.grid(row=contY, column=contX)
                     if kakuroPorDesplegar[i][j] != -1:
                         #print (kakuroPorDesplegar[i][j])
                         self.variablesEntry[-1].set(kakuroPorDesplegar[i][j])
                         
-                placeX+=90
-            placeY+=85
+                placeX+=photoBLACK.width()+2
+                contX+=1
+            placeY+=photoBLACK.width()+2
+            contY+=1
 
         #self.verificarButton = Button(text="Verificar solución", font=("Helvetica", 13),
                                       #command=lambda:self.verificarSolucion(listaCASILLAS,kakuroExample))
         self.verificarButton = Button(newWin,text="Verificar solución", font=("Helvetica", 13),
                                       command=lambda:self.verificarSolucion(self.variablesEntry,kakuroPorDesplegar))
-        self.verificarButton.place(x=10, y=placeY+10)
+        #self.verificarButton.place(x=10, y=placeY+10)
+        self.verificarButton.grid(row=0, column=contX, sticky=N+W+S+E)
         
         
-        self.resolverButton = Button(newWin,text="Resolver (backtracking)", font=("Helvetica", 13),
-                                      command=lambda:self.solucionarKakuro(self.variablesEntry,kakuroExampleSolved, newWin))
-        self.resolverButton.place(x=200, y=placeY+10)
+        self.resolverButton = Button(newWin,text="Resolver \n(backtracking)", font=("Helvetica", 13),
+                                      command=lambda:self.solucionarKakuro(self.variablesEntry,kakuroPorDesplegar, newWin))
+        #self.resolverButton.place(x=200, y=placeY+10)
+        self.resolverButton.grid(row=1, column=contX, sticky=N+W+S+E)
         
     def solucionarKakuro(self, listaCASILLAS, kakuro, _newWin):
         listaSOLUCIONES=[]
         copiaKakuroOriginal = copy.deepcopy(kakuro)
+        
+        cont = 0
 
-        cont = 0  
+        if solveKakuro2(kakuro):
+            print("YESSSSSS")
+        '''
         for x in range(0, len(kakuro)):
             for y in range(0, len(kakuro[0])):
                 if kakuro[x][y] == -1:
                     listaCASILLAS[cont].set(kakuro[x][y])
                     cont+=1
+        '''
         self.createGraphicKakuro(_newWin,kakuro)
+        
         #print(copiaKakuroOriginal)
         
         #solveBruteForce(copiaKakuroOriginal, [0,0])
@@ -177,7 +222,8 @@ class Application(Frame):
         cont = 0  
         for x in range(0, len(kakuro)):
             for y in range(0, len(kakuro[0])):
-                if kakuro[x][y] == -1:
+                if kakuro[x][y] != 0 and not isinstance(kakuro[x][y], list):
+                #if kakuro[x][y] == -1:
                     copiaKakuroOriginal[x][y] = int(listaCASILLAS[cont].get())
                     cont+=1
  
@@ -196,13 +242,21 @@ class Application(Frame):
             print("NOP")
                     
 
-        
+    def onFrameConfigure(self, event):
+        '''Reset the scroll region to encompass the inner frame'''
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+
+            
     def __init__(self, master=None):
-        Frame.__init__(self, master,width=600, height=600)
         #self.pack()
+        tk.Frame.__init__(self, root)
+        
+        
         self.createWidgets()
 
 root = Tk()
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
 app = Application(master=root)
 app.mainloop()
 root.destroy()
