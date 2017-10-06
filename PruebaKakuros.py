@@ -519,9 +519,9 @@ def getIntersection(list1, list2):
 
 
 def reviewNewSums(sum1,sum2,kakuro,position,values):
-    if sum1 == -BLACK_SPACE and sum2 == -BLACK_SPACE: return values
-    if sum1 != -BLACK_SPACE: sum1 = getNewSum(kakuro, position, sum1, True)
-    if sum2 != -BLACK_SPACE: sum2 = getNewSum(kakuro, position, sum2, False)
+    if sum1 == BLACK_SPACE and sum2 == BLACK_SPACE: return values
+    if sum1 != BLACK_SPACE: sum1 = getNewSum(kakuro, position, sum1, True)
+    if sum2 != BLACK_SPACE: sum2 = getNewSum(kakuro, position, sum2, False)
 
     spacesRight = getSpaces(kakuro,position,True)
     spacesDown = getSpaces(kakuro,position,False)
@@ -616,7 +616,7 @@ def solveKakuro(kakuro):
         num2 = getNumberUp(kakuro,position)
         # nueva funcion, lo que hace es que se va al diccionario y obtiene las cosas
         values = getValues(kakuro, position, num1, num2)
-        values = getNewValues(num1,num2,values,position,kakuro)
+        values = getNewValues(num1,num2,sorted(values),position,kakuro)
         if values == []:
             return False
         for i in range(len(values)):
@@ -631,6 +631,7 @@ def solveKakuro(kakuro):
 
 #gets random value
 def solveKakuro2(kakuro):
+    #kakuro[12][1] == 9 and kakuro[12][2] == 4 and kakuro[12][3] == 1 and kakuro[12][5] == 6 and kakuro[12][13] == 9 and kakuro[12][14] == 3 and kakuro[12][15] == 4 and kakuro[12][18] == 3 and kakuro[13][2] == 7 and kakuro[13][9] == 9 and kakuro[13][11] == 6 and kakuro[13][12] == 3 and kakuro[14][2] == 6 and kakuro[14][3] == 7 and kakuro[14][11] == 9 and kakuro[14][12] == 2 and kakuro[14][14] == 9 and kakuro[14][15] == 2 and kakuro[15][1] == 3 and kakuro[15][2] == 2 and kakuro[15][3] == 9 and kakuro[15][7] == 8 and kakuro[15][8] ==1 and kakuro[15][13] == 7 and kakuro[15][14] ==8 and kakuro[15][16] == 2
     if noEmptySpaces(kakuro):
         if isKakuroSolved(kakuro):
             return True
@@ -642,9 +643,8 @@ def solveKakuro2(kakuro):
         column = position[1]
         num1 = getNumberLeft(kakuro,position)
         num2 = getNumberUp(kakuro,position)
-        #nueva funcion, lo que hace es que se va al diccionario y obtiene las cosas
         values = getValues(kakuro,position,num1,num2)
-        values = getNewValues(num1,num2,values,position,kakuro)
+        values = getNewValues(num1,num2,sorted(values),position,kakuro)
         if values == []:
             return False
         length = len(values)
@@ -659,8 +659,6 @@ def solveKakuro2(kakuro):
             length -= 1
 
         return False
-
-
 
 
 
