@@ -631,7 +631,6 @@ def solveKakuro(kakuro):
 
 #gets random value
 def solveKakuro2(kakuro):
-    #kakuro[12][1] == 9 and kakuro[12][2] == 4 and kakuro[12][3] == 1 and kakuro[12][5] == 6 and kakuro[12][13] == 9 and kakuro[12][14] == 3 and kakuro[12][15] == 4 and kakuro[12][18] == 3 and kakuro[13][2] == 7 and kakuro[13][9] == 9 and kakuro[13][11] == 6 and kakuro[13][12] == 3 and kakuro[14][2] == 6 and kakuro[14][3] == 7 and kakuro[14][11] == 9 and kakuro[14][12] == 2 and kakuro[14][14] == 9 and kakuro[14][15] == 2 and kakuro[15][1] == 3 and kakuro[15][2] == 2 and kakuro[15][3] == 9 and kakuro[15][7] == 8 and kakuro[15][8] ==1 and kakuro[15][13] == 7 and kakuro[15][14] ==8 and kakuro[15][16] == 2
     if noEmptySpaces(kakuro):
         if isKakuroSolved(kakuro):
             return True
@@ -683,10 +682,6 @@ kakuro20x20 = [[0,0,0,0,0,0,0,0,0,0,0,[3,0],[4,0],[23,0],[7,0],0,0,0,[4,0],[17,0
                [0,[3,0],[4,24],-1,-1,-1,-1,-1,[4,0],[17,0],0,0,0,0,0,0,[0,19],-1,-1,-1],
                [[0,15],-1,-1,-1,-1,[0,20],-1,-1,-1,-1,0,0,0,0,0,0,0,0,0,0],
                [[0,4],-1,-1,0,0,[0,19],-1,-1,-1,-1,0,0,0,0,0,0,0,0,0,0]]
-
-
-
-
 
 
 kakuro10x10 = [[0,0,[45,0],[16,0],0,0,0,[3,0],[45,0],0],
