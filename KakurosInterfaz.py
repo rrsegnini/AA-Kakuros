@@ -4,8 +4,11 @@ from tkinter import messagebox
 import winsound
 from PruebaKakuros import *
 import copy
-large_font = ('Verdana',30)
 
+large_font = ('Verdana',30)
+NTR = ('Times New Roman', 12)
+import time
+import os
 
 class Application(Frame):
 
@@ -57,26 +60,37 @@ class Application(Frame):
         #w = Scale(nueva, from_=10, to=20)
         #w.pack()
 
+
         
         
         #self.createGraphicKakuro(nueva,kakuroExample)
     def mainWindow(self):
+
+        photo = PhotoImage(file = 'KakuroMain2.png')
+        generarBTN = PhotoImage(file = 'generarBTN2.png')
+        
+        lbl = Label(image = photo,highlightthickness=0, borderwidth=0)
+        lbl.image = photo #keeping a reference in this line
+        lbl.pack()
+        '''
         Label(text="Kakuros",font=("Helvetica", 13)).pack()
         Label(text="Creado por Roberto Rojas Segnini y Daniel Alvarado Bonilla").pack()
         Label(text="Seleccione el tamaño del kakuro").pack()
+        '''
+        root.config(bg="black")
         
-        
-        w = Scale( from_=10, to=20, orient=HORIZONTAL)
+        w = Scale( from_=10, to=20, orient=HORIZONTAL, bg="black", width=30,sliderlength=50,
+                   troughcolor= "Gray10",fg="DeepPink2", highlightcolor="red",highlightthickness=0,borderwidth=0)
         w.pack()
 
-        Button(text="Generar kakuro", command=lambda: self.createKakuro(w.get())).pack()
-        
+        gen = Button(text="Generar kakuro",highlightthickness=0,borderwidth=0, image=generarBTN,command=lambda: self.createKakuro(w.get())).pack()
+        gen.image = generarBTN
     def new_window(self):
         self.newWindow = Toplevel(root)
-        self.canvas = tk.Canvas(self.newWindow, borderwidth=0, background="#ffffff")
+        self.canvas = tk.Canvas(self.newWindow, borderwidth=0, background="DeepPink2")
         self.frame = tk.Frame(self.canvas, background="#ffffff")
         self.vsb = tk.Scrollbar(self.newWindow, orient="vertical", command=self.canvas.yview)
-        self.canvas.configure(yscrollcommand=self.vsb.set, width=1999)
+        self.canvas.configure(yscrollcommand=self.vsb.set)
 
         self.vsb.pack(side="right", fill="y")
         self.canvas.pack(side="left", fill="both", expand=True)
@@ -88,7 +102,7 @@ class Application(Frame):
         
         return self.frame
     def createKakuro(self, size):
-        newKak = crearMatriz(size)
+        #newKak = crearMatriz(size)
         kakuroExample = [[0,0,[3,0],[4,0],0],
                  [0,[5,4],-1,-1,0],
                  [[0,7],-1,-1,-1,0],
@@ -103,8 +117,8 @@ class Application(Frame):
             newWin.config(width=len(kakuroPorDesplegar)*70, height=len(kakuroPorDesplegar)*65)#, bg="black")
             self.canvas.configure(width=len(kakuroPorDesplegar)*70, height=len(kakuroPorDesplegar)*45)
         else:
-            newWin.config(width=screen_width-200, height=screen_width-800)#, bg="black")
-            self.canvas.configure(width=screen_width-200, height=screen_width-800)
+            newWin.config(width=screen_width-200, height=screen_width-800, bg="black")
+            self.canvas.configure(width=screen_width-680, height=screen_width-800)
             
         scrollbar = Scrollbar(newWin)
         #scrollbar.pack(side=RIGHT, fill=Y)
