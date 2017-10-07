@@ -87,7 +87,7 @@ class Application(Frame):
         gen.image = generarBTN
     def new_window(self):
         self.newWindow = Toplevel(root)
-        self.canvas = tk.Canvas(self.newWindow, borderwidth=0, background="DeepPink2")
+        self.canvas = tk.Canvas(self.newWindow, borderwidth=0, background="black")
         self.frame = tk.Frame(self.canvas, background="#ffffff")
         self.vsb = tk.Scrollbar(self.newWindow, orient="vertical", command=self.canvas.yview)
         self.canvas.configure(yscrollcommand=self.vsb.set)
@@ -113,6 +113,8 @@ class Application(Frame):
         self.createGraphicKakuro(self.frame,newKak) 
         
     def createGraphicKakuro(self,newWin, kakuroPorDesplegar):
+        verificarBTN = PhotoImage(file = 'verificarBTN.png')
+        resolverBTN = PhotoImage(file = 'resolverBTN.png')
         if (len(kakuroPorDesplegar)*70<screen_width) and len(kakuroPorDesplegar)*65 < screen_height:
             newWin.config(width=len(kakuroPorDesplegar)*70, height=len(kakuroPorDesplegar)*65)#, bg="black")
             self.canvas.configure(width=len(kakuroPorDesplegar)*70, height=len(kakuroPorDesplegar)*45)
@@ -123,7 +125,7 @@ class Application(Frame):
         scrollbar = Scrollbar(newWin)
         #scrollbar.pack(side=RIGHT, fill=Y)
         #newWin = self.new_window()
-        photoBLACK = PhotoImage(file="BLACKsmall.png")
+        photoBLACK = PhotoImage(file="BLACKsmall2.png")
         photoSLASH = PhotoImage(file="SLASHsmall.png")
         
         contX = 0
@@ -158,12 +160,12 @@ class Application(Frame):
                     #labelCASILLA.place(x=placeX, y=placeY)
                     if kakuroPorDesplegar[i][j][0] != 0:
                         labelNUM = Label(newWin,text=str(kakuroPorDesplegar[i][j][0]), font=("Helvetica", 12), fg="white", bg="black",
-                                         anchor=W, borderwidth=0,highlightthickness=0)
+                                         anchor=E, borderwidth=0,highlightthickness=0)
                         #labelNUM.place(x=placeX+8, y=placeY+25)
                         labelNUM.grid(row=contY, column=contX, sticky=SW)
                     if kakuroPorDesplegar[i][j][1] != 0:
                         labelNUM = Label(newWin,text=kakuroPorDesplegar[i][j][1], font=("Helvetica", 12), fg="white", bg="black",
-                                         anchor=E, borderwidth=0,highlightthickness=0)
+                                         anchor=W, borderwidth=0,highlightthickness=0)
                         labelNUM.grid(row=contY, column=contX, sticky=NE)
                         #labelNUM.place(x=placeX+30, y=placeY+8)
                         
@@ -196,14 +198,18 @@ class Application(Frame):
 
         #self.verificarButton = Button(text="Verificar solución", font=("Helvetica", 13),
                                       #command=lambda:self.verificarSolucion(listaCASILLAS,kakuroExample))
-        self.verificarButton = Button(newWin,text="Verificar solución", font=("Helvetica", 13),
-                                      command=lambda:self.verificarSolucion(self.variablesEntry,kakuroPorDesplegar))
+        self.verificarButton = Button(newWin,text="Verificar solución", font=("Helvetica", 13), image=verificarBTN,
+                                      command=lambda:self.verificarSolucion(self.variablesEntry,kakuroPorDesplegar)
+                                      ,highlightthickness=0,borderwidth=0)
+        self.verificarButton.image = verificarBTN
         #self.verificarButton.place(x=10, y=placeY+10)
         self.verificarButton.grid(row=0, column=contX, sticky=N+W+S+E)
         
         
-        self.resolverButton = Button(newWin,text="Resolver \n(backtracking)", font=("Helvetica", 13),
-                                      command=lambda:self.solucionarKakuro(self.variablesEntry,kakuroPorDesplegar, newWin))
+        self.resolverButton = Button(newWin,text="Resolver \n(backtracking)", font=("Helvetica", 13), image=resolverBTN,
+                                      command=lambda:self.solucionarKakuro(self.variablesEntry,kakuroPorDesplegar, newWin)
+                                     ,highlightthickness=0,borderwidth=0)
+        self.resolverButton.image=resolverBTN
         #self.resolverButton.place(x=200, y=placeY+10)
         self.resolverButton.grid(row=1, column=contX, sticky=N+W+S+E)
         
