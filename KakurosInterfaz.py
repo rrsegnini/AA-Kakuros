@@ -83,21 +83,33 @@ class Application(Frame):
                    troughcolor= "Gray10",fg="DeepPink2", highlightcolor="red",highlightthickness=0,borderwidth=0)
         w.pack()
 
-        gen = Button(text="Generar kakuro",highlightthickness=0,borderwidth=0, image=generarBTN,command=lambda: self.createKakuro(w.get())).pack()
+        gen = Button(text="Generar kakuro",highlightthickness=0,borderwidth=0, image=generarBTN,command=lambda: self.createKakuro(w.get()))
+        gen.pack()
         gen.image = generarBTN
+        
     def new_window(self):
         self.newWindow = Toplevel(root)
         self.canvas = tk.Canvas(self.newWindow, borderwidth=0, background="black")
         self.frame = tk.Frame(self.canvas, background="#ffffff")
         self.vsb = tk.Scrollbar(self.newWindow, orient="vertical", command=self.canvas.yview)
         self.canvas.configure(yscrollcommand=self.vsb.set)
-
+        
+        
+        self.frame.pack( fill="both", expand=True,anchor='center')
         self.vsb.pack(side="right", fill="y")
-        self.canvas.pack(side="left", fill="both", expand=True)
-        self.canvas.create_window((4,4), window=self.frame, anchor="nw", 
+        self.canvas.pack(side="left", fill="both", expand=True,anchor='center')
+        self.canvas.create_window((10,10), window=self.frame, anchor="nw", 
                                   tags="self.frame")
 
         self.frame.bind("<Configure>", self.onFrameConfigure)
+       
+        self.frame.grid_rowconfigure(0, weight=1)
+        self.frame.grid_rowconfigure(2, weight=1)
+        self.frame.grid_columnconfigure(0, weight=1)
+        self.frame.grid_columnconfigure(2, weight=1)
+        
+        #self.main_frame = Frame()
+        #self.frame.place(in_=self.newWindow, anchor="c", relx=.50, rely=.50)
         #self.newFrame = Frame(self.newWindow)
         
         return self.frame
@@ -108,24 +120,26 @@ class Application(Frame):
                  [[0,7],-1,-1,-1,0],
                  [0,-1,0,0,0],
                  [0,0,0,0,0]]
-        nueva = self.new_window()
+        self.new_window()
+        
         newKak = kakuro20x20
         self.createGraphicKakuro(self.frame,newKak) 
         
     def createGraphicKakuro(self,newWin, kakuroPorDesplegar):
+
         verificarBTN = PhotoImage(file = 'verificarBTN.png')
         resolverBTN = PhotoImage(file = 'resolverBTN.png')
-        if (len(kakuroPorDesplegar)*70<screen_width) and len(kakuroPorDesplegar)*65 < screen_height:
-            newWin.config(width=len(kakuroPorDesplegar)*70, height=len(kakuroPorDesplegar)*65)#, bg="black")
-            self.canvas.configure(width=len(kakuroPorDesplegar)*70, height=len(kakuroPorDesplegar)*45)
+        if (len(kakuroPorDesplegar)*100<screen_width) and len(kakuroPorDesplegar)*65 < screen_height:
+            newWin.config(width=len(kakuroPorDesplegar)*80, height=len(kakuroPorDesplegar)*65)#, bg="black")
+            self.canvas.configure(width=len(kakuroPorDesplegar)*100, height=len(kakuroPorDesplegar)*45)
         else:
             newWin.config(width=screen_width-200, height=screen_width-800, bg="black")
-            self.canvas.configure(width=screen_width-680, height=screen_width-800)
+            self.canvas.configure(width=screen_width-600, height=screen_width-800)
             
-        scrollbar = Scrollbar(newWin)
+        #scrollbar = Scrollbar(newWin)
         #scrollbar.pack(side=RIGHT, fill=Y)
         #newWin = self.new_window()
-        photoBLACK = PhotoImage(file="BLACKsmall2.png")
+        photoBLACK = PhotoImage(file="BLACKsmall4.png")
         photoSLASH = PhotoImage(file="SLASHsmall.png")
         
         contX = 0
@@ -151,7 +165,7 @@ class Application(Frame):
                 if kakuroPorDesplegar[i][j] == 0:
                     labelCASILLA = Label(newWin,image=photoBLACK,highlightthickness=0, borderwidth=0)
                     labelCASILLA.image = photoBLACK
-                    labelCASILLA.grid(row=contY, column=contX)#, sticky=S+W+E+N)
+                    labelCASILLA.grid(row=contY, column=contX)
                     #labelCASILLA.place(x=placeX, y=placeY)
                 elif isinstance(kakuroPorDesplegar[i][j], list):
                     labelCASILLA = Label(newWin,image=photoSLASH,highlightthickness=0, borderwidth=0)
@@ -200,7 +214,7 @@ class Application(Frame):
                                       #command=lambda:self.verificarSolucion(listaCASILLAS,kakuroExample))
         self.verificarButton = Button(newWin,text="Verificar solución", font=("Helvetica", 13), image=verificarBTN,
                                       command=lambda:self.verificarSolucion(self.variablesEntry,kakuroPorDesplegar)
-                                      ,highlightthickness=0,borderwidth=0)
+                                      ,highlightthickness=0,borderwidth=1)
         self.verificarButton.image = verificarBTN
         #self.verificarButton.place(x=10, y=placeY+10)
         self.verificarButton.grid(row=0, column=contX, sticky=N+W+S+E)
@@ -208,7 +222,7 @@ class Application(Frame):
         
         self.resolverButton = Button(newWin,text="Resolver \n(backtracking)", font=("Helvetica", 13), image=resolverBTN,
                                       command=lambda:self.solucionarKakuro(self.variablesEntry,kakuroPorDesplegar, newWin)
-                                     ,highlightthickness=0,borderwidth=0)
+                                     ,highlightthickness=0,borderwidth=1)
         self.resolverButton.image=resolverBTN
         #self.resolverButton.place(x=200, y=placeY+10)
         self.resolverButton.grid(row=1, column=contX, sticky=N+W+S+E)
@@ -269,12 +283,14 @@ class Application(Frame):
             
     def __init__(self, master=None):
         #self.pack()
-        tk.Frame.__init__(self, root)
+        self.frame=tk.Frame.__init__(self, root)
+        #self.frame.place(in_=self.main_frame, anchor="c", relx=.50, rely=.50)
         
         
         self.createWidgets()
 
 root = Tk()
+
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
 app = Application(master=root)
