@@ -4,14 +4,16 @@ from tkinter import messagebox
 import winsound
 from PruebaKakuros import *
 import copy
+import time
+import os
+import threading
 
 large_font = ('Verdana',30)
 NTR = ('Times New Roman', 12)
-import time
-import os
+
 
 class Application(Frame):
-
+    
     def callback(self,v,  *args):
         
         print (v.get(), " asfasf")
@@ -65,13 +67,17 @@ class Application(Frame):
         
         #self.createGraphicKakuro(nueva,kakuroExample)
     def mainWindow(self):
-
-        photo = PhotoImage(file = 'KakuroMain2.png')
+        
+        
+        #canvas.create_image(150, 150)
+        root.after(0, self.update, 0)
+        
+        photo = PhotoImage(file = 'KakuroMain3.png')
         generarBTN = PhotoImage(file = 'generarBTN2.png')
         
         lbl = Label(image = photo,highlightthickness=0, borderwidth=0)
         lbl.image = photo #keeping a reference in this line
-        lbl.pack()
+        lbl.grid(row=1, column=0)
         '''
         Label(text="Kakuros",font=("Helvetica", 13)).pack()
         Label(text="Creado por Roberto Rojas Segnini y Daniel Alvarado Bonilla").pack()
@@ -81,10 +87,10 @@ class Application(Frame):
         
         w = Scale( from_=10, to=20, orient=HORIZONTAL, bg="black", width=30,sliderlength=50,
                    troughcolor= "Gray10",fg="DeepPink2", highlightcolor="red",highlightthickness=0,borderwidth=0)
-        w.pack()
+        w.grid(row=2, column=0)
 
         gen = Button(text="Generar kakuro",highlightthickness=0,borderwidth=0, image=generarBTN,command=lambda: self.createKakuro(w.get()))
-        gen.pack()
+        gen.grid(row=3, column=0)
         gen.image = generarBTN
         
     def new_window(self):
@@ -279,7 +285,17 @@ class Application(Frame):
     def onFrameConfigure(self, event):
         '''Reset the scroll region to encompass the inner frame'''
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
-
+    def update(self,ind):
+        #print(ind)
+        
+        frame = frames[ind]
+        if ind<45:
+            ind += 1
+        else:
+            ind=0
+        #label.configure(image=frame)
+        canvas.create_image(250, 140, image=frame)
+        root.after(100, self.update, ind)
             
     def __init__(self, master=None):
         #self.pack()
@@ -290,7 +306,10 @@ class Application(Frame):
         self.createWidgets()
 
 root = Tk()
-
+frames = [PhotoImage(file='background-gif-9.gif',format = 'gif -index %i' %(i)) for i in range(46)]
+canvas = Canvas( bg="black", width=500, height=250,highlightthickness=0,borderwidth=0)
+canvas.grid(column=0, row=0)
+        
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
 app = Application(master=root)
