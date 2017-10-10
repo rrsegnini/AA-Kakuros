@@ -770,6 +770,7 @@ def solveKakuro2(kakuro):
         if isKakuroSolved(kakuro):
             return True
         else:
+            
             return False
     else:
         position = getNextPosition2(kakuro)
