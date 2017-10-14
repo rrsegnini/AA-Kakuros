@@ -1,7 +1,9 @@
 
 import random
-
-
+from KakuroGenerator import *
+import datetime
+timesFinished = 0
+times = 0
 
 
 '''
@@ -10,7 +12,8 @@ MEGA DICTIONARY
 
 masterDictionary = {2:{3:[[1,2]],4:[[1,3]],5:[[1,4],[2,3]],6:[[1,5],[2,4]]},3:{},4:{},5:{},6:{},7:{},8:{},9:{}}
 
-superDictionary = {2:{3:[1,2],4:[1,3],5:[1,2,3,4],6:[1,2,4,5],7:[1,2,3,4,5,6],8:[1,2,3,5,6,7],9:[1,2,3,4,5,6,7,8,9],
+superDictionary = {1:{1:[1],2:[2],3:[3],4:[4],5:[5],6:[6],7:[7],8:[8],9:[9]},
+                    2:{3:[1,2],4:[1,3],5:[1,2,3,4],6:[1,2,4,5],7:[1,2,3,4,5,6],8:[1,2,3,5,6,7],9:[1,2,3,4,5,6,7,8,9],
                       10:[1,2,3,4,6,7,8,9],11:[2,3,4,5,6,7,8,9],12:[3,4,5,7,8,9],13:[4,5,6,7,8,9],14:[5,6,8,9],15:[6,7,8,9],
                       16:[7,9],17:[8,9]},
                    3:{6:[1,2,3],7:[1,2,4],8:[1,2,3,4,5],9:[1,2,3,4,5,6],10:[1,2,3,4,5,6,7],11:[1,2,3,4,5,6,7,8,9],
@@ -104,7 +107,15 @@ def createEmptyMatrix(size):
 def printMatrix(_matrix):
     matrixLength = len(_matrix)
     for x in range(matrixLength):
-        print(_matrix[x],"\n")
+        stringg = ""
+        for y in range(matrixLength):
+            if _matrix[x][y] == 0:
+                stringg += "|_____|"
+            elif isinstance(_matrix[x][y],list):
+                stringg += str(_matrix[x][y])
+            else:
+                stringg+= "|__"+str(_matrix[x][y])+"__|"
+        print(stringg+"\n")
 
 
 
@@ -659,7 +670,10 @@ def reviewNewSums(sum1,sum2,kakuro,position,values):
 
     spacesRight = getSpaces(kakuro,position,True)
     spacesDown = getSpaces(kakuro,position,False)
-
+    if spacesDown == 1 and (sum2 == BLACK_SPACE or sum2 == 0):
+        spacesDown = 0
+    if spacesRight == 1 and (sum1 == BLACK_SPACE or sum1 == 0):
+        spacesRight = 0
     if spacesRight == 1 or spacesDown == 1:
         if sum1 == BLACK_SPACE:
             minValue = sum2
@@ -723,7 +737,10 @@ def getValues(_kakuro,_position,leftSum,upSum):
 
     elif spacesSumUp == BLACK_SPACE and spacesSumLeft != BLACK_SPACE:
         values = superDictionary[spacesSumLeft][leftSum]
-
+    elif leftSum == 0:
+        values = superDictionary[spacesSumUp][upSum]
+    elif upSum == 0:
+        values = superDictionary[spacesSumLeft][leftSum]
     else:
         values1 = superDictionary[spacesSumUp][upSum]
         values2 = superDictionary[spacesSumLeft][leftSum]
@@ -765,8 +782,11 @@ def solveKakuro(kakuro):
 
 #gets random value
 def solveKakuro2(kakuro):
-    #kakuro[12][1] == 9 and kakuro[12][2] == 4 and kakuro[12][3] == 1 and kakuro[12][5] == 6 and kakuro[12][13] == 9 and kakuro[12][14] == 3 and kakuro[12][15] == 4 and kakuro[12][18] == 3 and kakuro[13][2] == 7 and kakuro[13][9] == 9 and kakuro[13][11] == 6 and kakuro[13][12] == 3 and kakuro[14][2] == 6 and kakuro[14][3] == 7 and kakuro[14][11] == 9 and kakuro[14][12] == 2 and kakuro[14][14] == 9 and kakuro[14][15] == 2 and kakuro[15][1] == 3 and kakuro[15][2] == 2 and kakuro[15][3] == 9 and kakuro[15][7] == 8 and kakuro[15][8] ==1 and kakuro[15][13] == 7 and kakuro[15][14] ==8 and kakuro[15][16] == 2
+    global timesFinished
+    global times
+    #kakuro[12][1] == 9 and k
     if noEmptySpaces(kakuro):
+        timesFinished += 1
         if isKakuroSolved(kakuro):
             return True
         else:
@@ -776,10 +796,10 @@ def solveKakuro2(kakuro):
         position = getNextPosition2(kakuro)
         row = position[0]
         column = position[1]
-        num1 = getNumberLeft(kakuro,position)
-        num2 = getNumberUp(kakuro,position)
-        values = getValues(kakuro,position,num1,num2)
-        values = getNewValues(num1,num2,sorted(values),position,kakuro)
+        leftSum = getNumberLeft(kakuro,position)
+        upSum = getNumberUp(kakuro,position)
+        values = getValues(kakuro,position,leftSum,upSum)
+        values = getNewValues(leftSum,upSum,sorted(values),position,kakuro)
         if values == []:
             return False
         length = len(values)
@@ -795,6 +815,31 @@ def solveKakuro2(kakuro):
 
         return False
 
+
+def convertirKakuro(kakuroPorDesplegar):
+    # v = StringVar()
+    # listaCASILLAS=[]
+    # aProxy = []
+    # self.variablesEntry = []
+
+    kakuro2 = []
+    filaKakuro2 = []
+
+    for i in range(0, kakuroPorDesplegar.len()):
+        for j in range(0, kakuroPorDesplegar.len()):
+
+            if kakuroPorDesplegar.board[i][j].getType() == KCell.CELL_HEADER:
+
+                filaKakuro2 += [[kakuroPorDesplegar.board[i][j].header[0],
+                                 kakuroPorDesplegar.board[i][j].header[1]]]
+            elif kakuroPorDesplegar.board[i][j].getType() == KCell.CELL_DATA:
+                filaKakuro2.append(-1)
+            else:
+                filaKakuro2.append(0)
+
+        kakuro2 += [filaKakuro2]
+        filaKakuro2 = []
+    return (kakuro2)
 
 kakuro20x20 = [[0,0,0,0,0,0,0,0,0,0,0,[3,0],[4,0],[23,0],[7,0],0,0,0,[4,0],[17,0]],
                [0,0,0,0,0,0,0,0,0,0,[0,13],-1,-1,-1,-1,0,[11,0],[16,11],-1,-1],
@@ -845,12 +890,44 @@ kakuroExampleSolved = [[0,0,[3,0],[4,0],0],
 
 
 
-
+kakuroHard = [[0,0,[7,0],[17,0],0,0,0,0,0,[17,0],[28,0],0,0,0,[3,0],[4,0],[16,0],0,[7,0],[23,0]],
+              [0,[16,13],-1,-1,[4,0],0,[23,0],[4,0],[16,11],-1,-1,0,0,[0,10],-1,-1,-1,[24,13],-1,-1],
+              [[0,20],-1,-1,-1,-1,[19,30],-1,-1,-1,-1,-1,[4,0],0,[0,29],-1,-1,-1,-1,-1,-1],
+              [[0,10],-1,-1,[0,27],-1,-1,-1,-1,-1,[3,5],-1,-1,0,[16,0],[3,0],0,[23,18],-1,-1,-1],
+              [0,0,0,0,[29,14],-1,-1,0,[23,14],-1,-1,-1,[8,10],-1,-1,[6,16],-1,-1,0,0],
+              [0,0,0,[0,10],-1,-1,0,[4,14],-1,-1,-1,[6,24],-1,-1,-1,-1,-1,[39,0],[6,0],0],
+              [0,0,[8,0],[44,9],-1,-1,[0,12],-1,-1,[30,0],[0,4],-1,-1,0,[3,12],-1,-1,-1,-1,0],
+              [0,[0,14],-1,-1,-1,0,[0,16],-1,-1,-1,[16,3],-1,-1,[4,3],-1,-1,[7,6],-1,-1,0],
+              [0,[0,20],-1,-1,-1,0,0,0,[7,20],-1,-1,-1,[24,4],-1,-1,[0,6],-1,-1,-1,0],
+              [0,[0,12],-1,-1,[24,0],0,0,[0,15],-1,-1,-1,[29,10],-1,-1,0,[0,9],-1,-1,0,0],
+              [0,0,[0,12],-1,-1,0,0,[16,13],-1,-1,[3,17],-1,-1,0,0,[0,11],-1,-1,[6,0],0],
+              [0,0,[6,11],-1,-1,0,[3,10],-1,-1,[23,14],-1,-1,-1,0,0,0,[30,10],-1,-1,0],
+              [0,[0,19],-1,-1,-1,[7,9],-1,-1,[17,18],-1,-1,-1,[12,0],[16,0],0,[0,10],-1,-1,-1,0],
+              [0,[0,5],-1,-1,[24,3],-1,-1,[0,13],-1,-1,[0,18],-1,-1,-1,0,[30,18],-1,-1,-1,0],
+              [0,[0,14],-1,-1,-1,-1,[16,0],[4,17],-1,-1,[35,0],[17,8],-1,-1,[0,14],-1,-1,0,0,0],
+              [0,0,0,[7,24],-1,-1,-1,-1,-1,[4,23],-1,-1,-1,0,[7,13],-1,-1,0,0,0],
+              [0,[23,0],[6,8],-1,-1,[0,10],-1,-1,[0,19],-1,-1,-1,[17,0],[4,10],-1,-1,[3,0],0,[23,0],[3,0]],
+              [[0,13],-1,-1,-1,[16,0],[3,0],[17,0],0,[0,10],-1,-1,[4,26],-1,-1,-1,-1,-1,[16,7],-1,-1],
+              [[0,28],-1,-1,-1,-1,-1,-1,0,0,[0,19],-1,-1,-1,-1,-1,[0,20],-1,-1,-1,-1],
+              [[0,11],-1,-1,[0,19],-1,-1,-1,0,0,[0,9],-1,-1,0,0,0,0,[0,16],-1,-1,0]
+              ]
 #print(kakuro20x20[0][5],kakuro20x20[1][5],kakuro20x20[2][5],kakuro20x20[3][5],kakuro20x20[4][5])
 
-#if (solveKakuro2(kakuro20x20)):
-#    print("solucionado")
-
+#kakuroo = KBoard(10)
+#kakuroo.initialize()
+#kakuroo.print()
+#kakuroBOARD = convertirKakuro(kakuroo)
+'''
+print(datetime.datetime.now().time())
+if (solveKakuro2(kakuro10x10)):
+    printMatrix(kakuro10x10)
+    print("solucionado")
+    print(timesFinished)
+    print(datetime.datetime.now().time())
+'''
+#solveKakuro2(kakuro10x10)
+#printMatrix(kakuro10x10)
+#SIII LA SUMA DE LOS DE ARRIBA ES 0 QUIERE DECIR QUE LOS VALORES QUE IMPORTAN SON SOLO LOS DE LA DERECHA
 
 #print(getLowestValue(30,5))
 #
