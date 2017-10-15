@@ -2,7 +2,15 @@ from tkinter import *
 import tkinter as tk
 from tkinter import messagebox
 import winsound
-from PruebaKakuros import *
+import json
+
+
+#from PruebaKakuros import *
+
+
+from PruebaKakurosHilos import *
+
+
 from KakuroGenerator import *
 import copy
 import time
@@ -56,7 +64,7 @@ class Application(Frame):
                 [[0,13],-1,-1,-1,0,[7,8],-1,-1,0,0,0,[0,8],-1,-1,[4,0],0,0,[0,10],-1,-1],
                 [[0,10],-1,-1,-1,[24,16],-1,-1,-1],
                 [0,[16,0],[4,0],[6,0],0,0,[4,0],[16,0],0,0,0,0,[30,0],[4,0],0,0,0,0,[23,0],[4,0]]]
-        print(len(kaks[1]))
+        #print(len(kaks[1]))
 
         self.mainWindow()
         #nueva = self.new_window()
@@ -68,7 +76,7 @@ class Application(Frame):
         
         #self.createGraphicKakuro(nueva,kakuroExample)
     def mainWindow(self):
-        
+
         
         #canvas.create_image(150, 150)
         root.after(0, self.update, 0)
@@ -79,11 +87,7 @@ class Application(Frame):
         lbl = Label(image = photo,highlightthickness=0, borderwidth=0)
         lbl.image = photo #keeping a reference in this line
         lbl.grid(row=1, column=0)
-        '''
-        Label(text="Kakuros",font=("Helvetica", 13)).pack()
-        Label(text="Creado por Roberto Rojas Segnini y Daniel Alvarado Bonilla").pack()
-        Label(text="Seleccione el tamaño del kakuro").pack()
-        '''
+
         root.config(bg="black")
         
         w = Scale( from_=10, to=20, orient=HORIZONTAL, bg="black", width=30,sliderlength=50,
@@ -93,6 +97,35 @@ class Application(Frame):
         gen = Button(text="Generar kakuro",highlightthickness=0,borderwidth=0, image=generarBTN,command=lambda: self.createKakuro(w.get()))
         gen.grid(row=3, column=0)
         gen.image = generarBTN
+
+
+        Label(text="Kakuros de ejemplo:", bg="black",fg="DeepPink2",
+                             font=("Helvetica", 12)).grid(row=4,column=0)
+        kakuroList = Listbox(bg="black", fg="DeepPink2", width=30,height=5,
+                             font=("Helvetica", 12))
+        kakuroList.grid(row=5, column=0)
+
+        file = open("savedKakuros.txt", "w")
+        file.write(str(kakuro10x10))
+        file.write("$")
+        file.write(str(kakuro20x20))
+
+
+        file = open("savedKakuros.txt", "r")
+        #rint(json.loads(file.readlines()[0].split("$")[0]))
+        #print(file.readlines()[0].split("$"))
+        exmpls=file.readlines()[0].split("$")
+        for i in exmpls:
+            print(i)
+            kakuroList.insert(END, str(len(json.loads(i))).rjust(32))
+        file.close()
+
+       #k = exmpls[kakuroList.curselection()[0]]
+        gen2 = Button(text="Generar ejemplo", highlightthickness=0, borderwidth=0,# image=generarBTN,
+            command=lambda: self.createKakuroExample(json.loads(exmpls[kakuroList.curselection()[0]])))
+        gen2.grid(row=5, column=0)
+        #gen2.image = generarBTN
+
         
     def new_window(self):
         self.newWindow = Toplevel(root)
@@ -120,10 +153,16 @@ class Application(Frame):
         #self.newFrame = Frame(self.newWindow)
         
         return self.frame
+
+    def createKakuroExample(self,kak):
+        self.new_window()
+        #k = readyKaks[kak.curselection()[0]]
+        #print(kak.curselection()[0])
+        self.createGraphicKakuro(self.frame, kak)
+
     def createKakuro(self, size):
-        
         try:
-            print("Trying...")
+            #print("Trying...")
             newKakuro = KBoard(size)
             newKakuro.initialize()
             newKakuro.print()
@@ -136,21 +175,10 @@ class Application(Frame):
         self.new_window()
         
         newKakuro = self.convertirKakuro(newKakuro)
-        '''
-        newKakuro = [[0,0,0,0,0,[12,0],[11,0],[25,0],0,0],
-                 [0,0,0,0,[0,22],-1,-1,-1,-1,0],
-                 [0,0,0,0,[12,15],-1,-1,-1,0,0],
-                 [0,[0,18],-1,-1,-1,[18,0],[0,11],-1,-1,0],
-                 [0,0,0,[0,15],-1,-1,-1,-1,0,0],
-                 [0,0,0,[0,12],-1,-1,0,0,0,0],
-                 [0,0,[5,0],0,[0,11],-1,-1,[8,0],[11,0],0],
-                 [[0,11],-1,-1,0,0,0,[0,13],-1,-1,0],
-                 [0,[0,29],-1,-1,-1,-1,-1,-1,-1,0],
-                 [0,0,0,0,0,0,0,0,0,0]]
-        '''
-        #newKakuro = kakuro10x10
-        print(newKakuro)
-        self.createGraphicKakuro(self.frame,newKakuro) 
+
+
+        self.createGraphicKakuro(self.frame,newKakuro)
+
     def createGraphicKakuro(self,newWin, kakuroPorDesplegar):
 
         verificarBTN = PhotoImage(file = 'verificarBTN.png')
@@ -246,12 +274,22 @@ class Application(Frame):
         
         
         self.resolverButton = Button(newWin,text="Resolver \n(backtracking)", font=("Helvetica", 13), image=resolverBTN,
-                                      command=lambda:self.solucionarKakuro(self.variablesEntry,kakuroPorDesplegar, newWin)
+                                      command=lambda:self.solucionarKakuro(self.variablesEntry,kakuroPorDesplegar, newWin, threadScale.get())
                                      ,highlightthickness=0,borderwidth=1)
         self.resolverButton.image=resolverBTN
         #self.resolverButton.place(x=200, y=placeY+10)
         self.resolverButton.grid(row=1, column=contX, sticky=N+W+S+E)
 
+        threadScale = Scale(newWin, from_=0, to=1000, label="Hilos",
+                            orient=HORIZONTAL, bg="black", width=15, sliderlength=50,
+                  troughcolor="Gray10", fg="DeepPink2", highlightcolor="red", highlightthickness=0, borderwidth=0)
+        threadScale.grid(row=2, column=contX)
+
+        forksScale = Scale(newWin, from_=0, to=20, label="Forks",
+                            orient=HORIZONTAL, bg="black", width=15, sliderlength=50,
+                            troughcolor="Gray10", fg="DeepPink2", highlightcolor="red", highlightthickness=0,
+                            borderwidth=0)
+        forksScale.grid(row=4, column=contX)
    
     def convertirKakuro(self,kakuroPorDesplegar):
 
@@ -281,12 +319,13 @@ class Application(Frame):
             filaKakuro2=[]
         return (kakuro2)
         
-    def solucionarKakuro(self, listaCASILLAS, kakuro, _newWin):
-        print ("JAJAJAJAj")
+    def solucionarKakuro(self, listaCASILLAS, kakuro, _newWin, numThreads):
         listaSOLUCIONES=[]
         copiaKakuroOriginal = copy.deepcopy(kakuro)
         
         cont = 0
+
+        setGlobalThreads(numThreads)
 
         solveKakuro2(kakuro)
         print(kakuro)
@@ -347,7 +386,8 @@ class Application(Frame):
         root.after(100, self.update, ind)
             
     def __init__(self, master=None):
-        #self.pack()
+
+
         self.frame=tk.Frame.__init__(self, root)
         #self.frame.place(in_=self.main_frame, anchor="c", relx=.50, rely=.50)
         
