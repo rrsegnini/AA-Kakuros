@@ -1,10 +1,137 @@
 
 import random
 from KakuroGenerator import *
+#from NewSolver import *
 import datetime
 timesFinished = 0
-times = 0
 
+CombinationsDic = {2:{3:[[1,2]],
+                      4:[[1,3]],
+                      5:[[1,4],[2,3]],
+                      6:[[1,5],[2,4]],
+                      7:[[1,6],[2,5],[3,4]],
+                      8:[[1,7],[2,6],[3,5]],
+                      9:[[1,8],[2,7],[3,6],[4,5]],
+                      10:[[1,9],[2,8],[3,7],[4,6]],
+                      11:[[2,9],[3,8],[4,7],[5,6]],
+                      12:[[3,9],[4,8],[5,7]],
+                      13:[[4,9],[5,8],[6,7]],
+                      14:[[5,9],[6,8]],
+                      15:[[6,9],[7,8]],
+                      16:[[7,9]],
+                      17:[[8,9]]},
+
+                   3: {6:[[1,2,3]],
+                       7:[[1,2,4]],
+                       8:[[1,2,3],[1,3,4]],
+                       9:[[1,2,6],[1,3,5],[2,3,4]],
+                       10:[[1,2,7],[1,3,6],[1,4,5],[2,3,5]],
+                       11:[[1,2,8],[1,3,7],[1,4,6],[2,3,6],[2,4,5]],
+                       12:[[1,2,9],[1,3,8],[1,4,7],[1,5,6],[2,3,7],[2,4,6],[3,4,5]],
+                       13:[[1,3,9],[1,4,8],[1,5,7],[2,3,8],[2,4,7],[2,5,6],[3,4,6]],
+                       14:[[1,4,9],[1,5,8],[1,6,7],[2,3,9],[2,4,8],[2,5,7],[3,4,7],[3,5,6]],
+                       15:[[1,5,9],[1,6,8],[2,4,9],[2,5,8],[2,6,7],[3,4,8],[3,5,7],[4,5,6]],
+                       16:[[1,6,9],[1,7,8],[2,5,9],[2,6,8],[3,4,9],[3,5,8],[3,6,7],[4,5,7]],
+                       17:[[1,7,9],[2,6,9],[2,7,8],[3,5,9],[3,6,8],[4,5,8],[4,6,7]],
+                       18:[[1,8,9],[2,7,9],[3,6,9],[3,7,8],[4,5,9],[4,6,8],[5,6,7]],
+                       19:[[2,8,9],[3,7,9],[4,6,9],[4,7,8],[5,6,8]],
+                       20:[[3,8,9],[4,7,9],[5,6,9],[5,7,8]],
+                       21:[[4,8,9],[5,7,9],[6,7,8]],
+                       22:[[5,8,9],[6,7,9]],
+                       23:[[6,8,9]],
+                       24:[[7,8,9]]},
+
+                   4: {10:[[1,2,3,4]],
+                       11:[[1,2,3,5]],
+                       12:[[1,2,3,6],[1,2,4,5]],
+                       13:[[1,2,3,7],[1,2,4,6],[1,2,4,5]],
+                       14:[[1,2,3,8],[1,2,4,7],[1,2,5,6],[1,3,4,6],[2,3,4,5]],
+                       15:[[1,2,3,9],[1,2,4,8],[1,2,5,7],[1,3,4,7],[1,3,5,6],[2,3,4,6]],
+                       16:[[1,2,4,9],[1,2,5,8],[1,2,6,7],[1,2,4,8],[1,3,5,7],[1,4,5,6],[2,3,4,7],[2,3,5,6]],
+                       17:[[1,2,5,9],[1,2,6,8],[1,3,4,9],[1,3,5,8],[1,3,6,7],[1,4,5,7],[2,3,4,8],[2,3,5,7],[2,4,5,6]],
+                       18:[[1,2,6,9],[1,2,7,8],[1,3,5,9],[1,3,6,8],[1,4,5,8],[1,4,6,7],[2,3,4,9],[2,3,5,8],[2,3,6,7],[2,4,5,7],[3,4,5,6]],
+                       19:[[1,2,7,9],[1,3,6,9],[1,3,7,8],[1,4,5,9],[1,4,6,8],[1,5,6,7],[2,3,5,9],[2,3,6,8],[2,4,5,8],[2,4,6,7],[3,4,5,7]],
+                       20:[[1,2,8,9],[1,3,7,9],[1,4,6,9],[1,4,7,8],[1,5,6,8],[2,3,6,9],[2,3,7,8],[2,4,5,9],[2,4,6,8],[2,5,6,7],[3,4,5,8],[3,4,6,7]],
+                       21:[[1,3,8,9],[1,4,7,9],[1,5,6,9],[1,5,7,8],[2,3,7,9],[2,4,6,9],[2,4,7,8],[2,5,6,8],[3,4,5,9],[3,4,6,8],[3,5,6,7]],
+                       22:[[1,4,8,9],[1,5,7,9],[1,6,7,8],[2,3,8,9],[2,4,7,9],[2,5,6,9],[2,5,7,8],[3,4,6,9],[3,4,7,8],[3,5,6,8],[4,5,6,7]],
+                       23:[[1,5,8,9],[1,6,7,9],[2,4,8,9],[2,5,7,9],[2,6,7,8],[3,4,7,9],[3,5,6,9],[3,5,7,8],[4,5,6,8]],
+                       24:[[1,6,8,9],[2,5,8,9],[2,6,7,9],[3,4,8,9],[3,5,7,9],[3,6,7,8],[4,5,6,9],[4,5,7,8]],
+                       25:[[1,7,8,9],[2,6,8,9],[3,5,8,9],[3,6,7,9],[4,5,7,9],[4,6,7,8]],
+                       26:[[2,7,8,9],[3,6,8,9],[4,5,8,9],[4,6,7,9],[5,6,7,8]],
+                       27:[[3,7,8,9],[4,6,8,9],[5,6,7,9]],
+                       28:[[4,7,8,9],[5,6,8,9]],
+                       29:[[5,7,8,9]],
+                       30:[[6,7,8,9]]},
+
+                   5: {15:[[1,2,3,4,5]],
+                       16:[[1,2,3,4,6]],
+                       17:[[1,2,3,4,7],[1,2,3,5,6]],
+                       18:[[1,2,3,4,8],[1,2,3,5,7],[1,2,4,5,6]],
+                       19:[[1,2,3,4,9],[1,2,3,5,8],[1,2,3,6,7],[1,2,4,5,7],[1,3,4,5,6]],
+                       20:[[1,2,3,5,9],[1,2,3,6,8],[1,2,4,5,8],[1,2,4,6,7],[1,3,4,5,7],[2,3,4,5,6]],
+                       21:[[1,2,3,6,9],[1,2,3,7,8],[1,2,4,5,9],[1,2,4,6,8],[1,2,5,6,7],[1,3,4,5,8],[1,3,4,6,7],[2,3,4,5,7]],
+                       22:[[1,2,3,7,9],[1,2,4,6,9],[1,2,4,7,8],[1,2,5,6,8],[1,3,4,5,9],[1,3,4,6,8],[1,3,5,6,7],[2,3,4,5,8],[2,3,4,6,7]],
+                       23:[[1,2,3,8,9],[1,2,4,7,9],[1,2,5,6,9],[1,2,5,7,8],[1,3,4,6,9],[1,3,4,7,8],[1,3,5,6,8],[1,4,5,6,7],[2,3,4,5,9],[2,3,4,6,8],[2,3,5,6,7]],
+                       24:[[1,2,4,8,9],[1,2,5,7,9],[1,2,6,7,8],[1,3,4,7,9],[1,3,5,6,9],[1,3,5,7,8],[1,4,5,6,8],[2,3,4,6,9],[2,3,4,7,8],[2,3,5,6,8],[2,4,5,6,7]],
+                       25:[[1,2,5,8,9],[1,2,6,7,9],[1,3,4,8,9],[1,3,5,7,9],[1,3,6,7,8],[1,4,5,6,9],[1,4,5,7,8],[2,3,4,7,9],[2,3,5,6,9],[2,3,5,7,8],[2,4,5,6,8],[3,4,5,6,7]],
+                       26:[[1,2,6,8,9],[1,3,5,8,9],[1,3,6,7,9],[1,4,5,7,9],[1,4,6,7,8],[2,3,4,8,9],[2,3,5,7,9],[2,3,6,7,8],[2,4,5,6,9],[2,4,5,7,8],[3,4,5,6,8]],
+                       27:[[1,2,7,8,9],[1,3,6,8,9],[1,4,5,8,9],[1,4,6,7,9],[1,5,6,7,8],[2,3,5,8,9],[2,3,6,7,9],[2,4,5,7,9],[2,4,6,7,8],[3,4,5,6,9],[3,4,5,7,8]],
+                       28:[[1,3,7,8,9],[1,4,6,8,9],[1,5,6,7,9],[2,3,6,8,9],[2,4,5,8,9],[2,4,6,7,9],[2,5,6,7,8],[3,4,5,7,9],[3,4,6,7,8]],
+                       29:[[1,4,7,8,9],[1,5,6,8,9],[2,3,7,8,9],[2,4,6,8,9],[2,5,6,7,9],[3,4,5,8,9],[3,4,6,7,9],[3,5,6,7,8]],
+                       30:[[1,5,7,8,9],[2,4,7,8,9],[2,5,6,8,9],[3,4,6,8,9],[3,5,6,7,9],[4,5,6,7,8]],
+                       31:[[1,6,7,8,9],[2,5,7,8,9],[3,4,7,8,9],[3,5,6,8,9],[4,5,6,7,9]],
+                       32:[[2,6,7,8,9],[3,5,7,8,9],[4,5,6,8,9]],
+                       33:[[3,6,7,8,9],[4,5,7,8,9]],
+                       34:[[4,6,7,8,9]],
+                       35:[[5,6,7,8,9]]},
+
+                   6: {21:[[1,2,3,4,5,6]],
+                       22:[[1,2,3,4,5,7]],
+                       23:[[1,2,3,4,5,8],[1,2,3,4,6,7]],
+                       24:[[1,2,3,4,5,9],[1,2,3,4,6,8],[1,2,3,5,6,7]],
+                       25:[[1,2,3,4,6,9],[1,2,3,4,7,8],[1,2,3,5,6,8],[1,2,4,5,6,7]],
+                       26:[[1,2,3,4,7,9],[1,2,3,5,6,9],[1,2,3,5,7,8],[1,2,4,5,6,8],[1,3,4,5,6,7]],
+                       27:[[1,2,3,4,8,9],[1,2,3,5,7,9],[1,2,3,6,7,8],[1,2,4,5,6,9],[1,2,4,5,7,8],[1,3,4,5,6,8],[2,3,4,5,6,7]],
+                       28:[[1,2,3,5,8,9],[1,2,3,6,7,9],[1,2,4,5,7,9],[1,2,4,6,7,8],[1,3,4,5,6,9],[1,3,4,5,7,8],[2,3,4,5,6,8]],
+                       29:[[1,2,3,6,8,9],[1,2,4,5,8,9],[1,2,4,6,7,9],[1,2,5,6,7,8],[1,3,4,5,7,9],[1,3,4,6,7,8],[2,3,4,5,6,9],[2,3,4,5,7,8]],
+                       30:[[1,2,3,7,8,9],[1,2,4,6,8,9],[1,2,5,6,7,9],[1,3,4,5,8,9],[1,3,4,6,7,9],[1,3,5,6,7,8],[2,3,4,5,7,9],[2,3,4,6,7,8]],
+                       31:[[1,2,4,7,8,9],[1,2,5,6,8,9],[1,3,4,6,8,9],[1,3,5,6,7,9],[1,4,5,6,7,8],[2,3,4,5,8,9],[2,3,4,6,7,9],[2,3,5,6,7,8]],
+                       32:[[1,2,5,7,8,9],[1,3,4,7,8,9],[1,3,5,6,8,9],[1,4,5,6,7,9],[2,3,4,6,8,9],[2,3,5,6,7,9],[2,4,5,6,7,8]],
+                       33:[[1,2,6,7,8,9],[1,3,5,7,8,9],[1,4,5,6,8,9],[2,3,4,7,8,9],[2,3,5,6,8,9],[2,4,5,6,7,9],[3,4,5,6,7,8]],
+                       34:[[1,3,6,7,8,9],[1,4,5,7,8,9],[2,3,5,7,8,9],[2,4,5,6,8,9],[3,4,5,6,7,9]],
+                       35:[[1,4,6,7,8,9],[2,3,6,7,8,9],[2,4,5,7,8,9],[3,4,5,6,8,9]],
+                       36:[[1,5,6,7,8,9],[2,4,6,7,8,9],[3,4,5,7,8,9]],
+                       37:[[2,5,6,7,8,9],[3,4,6,7,8,9]],
+                       38:[[3,5,6,7,8,9]],
+                       39:[[4,5,6,7,8,9]]},
+
+                   7: {28:[[1,2,3,4,5,6,7]],
+                       29:[[1,2,3,4,5,6,8]],
+                       30:[[1,2,3,4,5,6,9],[1,2,3,4,5,7,8]],
+                       31:[[1,2,3,4,5,7,9],[1,2,3,4,6,7,8]],
+                       32:[[1,2,3,4,5,8,9],[1,2,3,4,6,7,9],[1,2,3,5,6,7,8]],
+                       33:[[1,2,3,4,6,8,9],[1,2,3,5,6,7,9],[1,2,4,5,6,7,8]],
+                       34:[[1,2,3,4,7,8,9],[1,2,3,5,6,8,9],[1,2,4,5,6,7,9],[1,3,4,5,6,7,8]],
+                       35:[[1,2,3,5,7,8,9],[1,2,4,5,6,8,9],[1,3,4,5,6,7,9],[2,3,4,5,6,7,8]],
+                       36:[[1,2,3,6,7,8,9],[1,2,4,5,7,8,9],[1,3,4,5,6,8,9],[2,3,4,5,6,7,9]],
+                       37:[[1,2,4,6,7,8,9],[1,3,4,5,7,8,9],[2,3,4,5,6,8,9]],
+                       38:[[1,2,5,6,7,8,9],[1,3,4,6,7,8,9],[2,3,4,5,7,8,9]],
+                       39:[[1,3,5,6,7,8,9],[2,3,4,6,7,8,9]],
+                       40:[[1,4,5,6,7,8,9],[2,3,5,6,7,8,9]],
+                       41:[[2,4,5,6,7,8,9]],
+                       42:[[3,4,5,6,7,8,9]]},
+
+                   8: {36:[[1,2,3,4,5,6,7,8]],
+                       37:[[1,2,3,4,5,6,7,9]],
+                       38:[[1,2,3,4,5,6,8,9]],
+                       39:[[1,2,3,4,5,7,8,9]],
+                       40:[[1,2,3,4,6,7,8,9]],
+                       41:[[1,2,3,5,6,7,8,9]],
+                       42:[[1,2,4,5,6,7,8,9]],
+                       43:[[1,3,4,5,6,7,8,9]],
+                       44:[[2,3,4,5,6,7,8,9]]},
+
+                   9: {45:[[1,2,3,4,5,6,7,8,9]]}}
 
 '''
 MEGA DICTIONARY
@@ -12,8 +139,7 @@ MEGA DICTIONARY
 
 masterDictionary = {2:{3:[[1,2]],4:[[1,3]],5:[[1,4],[2,3]],6:[[1,5],[2,4]]},3:{},4:{},5:{},6:{},7:{},8:{},9:{}}
 
-superDictionary = {1:{1:[1],2:[2],3:[3],4:[4],5:[5],6:[6],7:[7],8:[8],9:[9]},
-                    2:{3:[1,2],4:[1,3],5:[1,2,3,4],6:[1,2,4,5],7:[1,2,3,4,5,6],8:[1,2,3,5,6,7],9:[1,2,3,4,5,6,7,8,9],
+superDictionary = {2:{3:[1,2],4:[1,3],5:[1,2,3,4],6:[1,2,4,5],7:[1,2,3,4,5,6],8:[1,2,3,5,6,7],9:[1,2,3,4,5,6,7,8,9],
                       10:[1,2,3,4,6,7,8,9],11:[2,3,4,5,6,7,8,9],12:[3,4,5,7,8,9],13:[4,5,6,7,8,9],14:[5,6,8,9],15:[6,7,8,9],
                       16:[7,9],17:[8,9]},
                    3:{6:[1,2,3],7:[1,2,4],8:[1,2,3,4,5],9:[1,2,3,4,5,6],10:[1,2,3,4,5,6,7],11:[1,2,3,4,5,6,7,8,9],
@@ -50,56 +176,7 @@ BLANK_SPACE = -1
 
 # print (random.randint(0,9))
 
-def crearMatriz():
-    n = 7
-    matrix = []
-    fila_nueva = []
-    for i in range(0, n):
 
-        for j in range(0, n):
-            fila_nueva += [[]]
-            # print (random.randint(0,9))
-        matrix += [fila_nueva]
-        fila_nueva = []
-
-    i = 0  # filas
-    j = 0  # columnas
-    while i != n:
-        j = 0
-        # i=0
-        while j != n:
-            if j == 0 or i == 0:
-                matrix[i][j].insert(0, 0)
-                matrix[i][j].insert(1, 0)
-            else:
-                top = random.randint(0, n)
-                bottom = random.randint(0, n)
-                matrix[i][j].insert(0, top)
-                matrix[i][j].insert(1, bottom)
-            j += 1
-        i += 1
-
-
-    print(matrix)
-
-
-def createEmptyMatrix(size):
-    mLength = size
-    newMatrix = []
-    for x in range(mLength):
-        newList = []
-        newMatrix.append(newList)
-        for y in range(mLength):
-            newList.append(0)
-            '''
-            randomNumber = random.randint(0, 20)
-            if randomNumber == 3:
-                newList.append([random.randint(0,45),random.randint(0,45)])
-            else:
-                newList.append(0)
-            '''
-
-    return newMatrix
 
 
 
@@ -107,15 +184,7 @@ def createEmptyMatrix(size):
 def printMatrix(_matrix):
     matrixLength = len(_matrix)
     for x in range(matrixLength):
-        stringg = ""
-        for y in range(matrixLength):
-            if _matrix[x][y] == 0:
-                stringg += "|_____|"
-            elif isinstance(_matrix[x][y],list):
-                stringg += str(_matrix[x][y])
-            else:
-                stringg+= "|__"+str(_matrix[x][y])+"__|"
-        print(stringg+"\n")
+        print(_matrix[x],"\n")
 
 
 
@@ -670,14 +739,14 @@ def reviewNewSums(sum1,sum2,kakuro,position,values):
 
     spacesRight = getSpaces(kakuro,position,True)
     spacesDown = getSpaces(kakuro,position,False)
-    if spacesDown == 1 and (sum2 == BLACK_SPACE or sum2 == 0):
+    if spacesDown == 1 and sum2 == BLACK_SPACE:
         spacesDown = 0
-    if spacesRight == 1 and (sum1 == BLACK_SPACE or sum1 == 0):
+    if spacesRight == 1 and sum1 == BLACK_SPACE:
         spacesRight = 0
     if spacesRight == 1 or spacesDown == 1:
-        if sum1 == BLACK_SPACE:
+        if sum1 == BLACK_SPACE and sum2 != BLACK_SPACE:
             minValue = sum2
-        elif sum2 == BLACK_SPACE:
+        elif sum2 == BLACK_SPACE and sum1 != BLACK_SPACE:
             minValue = sum1
         else:
             minValue = min(sum1,sum2)
@@ -710,7 +779,7 @@ def getValues(_kakuro,_position,leftSum,upSum):
     spacesSumLeft = BLACK_SPACE
 
     while contRow >= 0:
-        if isinstance(_kakuro[contRow][contCol], list):
+        if isinstance(_kakuro[contRow][contCol], list) and _kakuro[contRow][contCol][0] != 0:
             spacesSumUp = getSpaces4getValues(_kakuro,[contRow+1,contCol],False)
             break
         elif _kakuro[contRow][contCol] == 0:
@@ -723,7 +792,7 @@ def getValues(_kakuro,_position,leftSum,upSum):
     contRow = _position[0]
     contCol = _position[1]
     while contCol >= 0:
-        if isinstance(_kakuro[contRow][contCol], list):
+        if isinstance(_kakuro[contRow][contCol], list) and _kakuro[contRow][contCol][1] != 0:
             spacesSumLeft = getSpaces4getValues(_kakuro,[contRow,contCol+1],True)
             break
         elif _kakuro[contRow][contCol] == 0:
@@ -748,12 +817,8 @@ def getValues(_kakuro,_position,leftSum,upSum):
     return values
 
 
+
 def solveKakuro(kakuro):
-
-    #printMatrix(kakuro)
-    #print("--------------------------\n------------------\n--------------------------")
-    #print("--------------------------\n------------------\n--------------------------")
-
     if noEmptySpaces(kakuro):
         if isKakuroSolved(kakuro):
             return True
@@ -761,13 +826,18 @@ def solveKakuro(kakuro):
             return False
     else:
         position = getNextPosition2(kakuro)
+        # position == [19,10] or position == [16,10] or kakuro[1][9] == 8
         row = position[0]
         column = position[1]
-        num1 = getNumberLeft(kakuro,position)
-        num2 = getNumberUp(kakuro,position)
-        # nueva funcion, lo que hace es que se va al diccionario y obtiene las cosas
+        num1 = getNumberLeft(kakuro, position)
+        if num1 == 0: num1 = -25
+        num2 = getNumberUp(kakuro, position)
+        if num2 == 0: num2 = -25
         values = getValues(kakuro, position, num1, num2)
-        values = getNewValues(num1,num2,sorted(values),position,kakuro)
+        # values = getValuesList(num1,num2,kakuro,position)
+        #values = getIntersection(getValues(kakuro,position,num1,num2),getValuesList(num1,num2,kakuro,position))
+        #values = getNewValues(num1, num2, sorted(values), position, kakuro)
+        values = deleteRepeatedValues2(kakuro,getIntersection(getValues(kakuro,position,num1,num2),getValuesList(num1,num2,kakuro,position)),position)
         if values == []:
             return False
         for i in range(len(values)):
@@ -781,25 +851,104 @@ def solveKakuro(kakuro):
         return False
 
 #gets random value
+
+def substractVal(kakuro,position,sum,left):
+    newSum = 0
+    newSpaces = 0
+    spaces = 0
+    if left:
+        contRow = position[0]
+        contCol = position[1]
+        while contCol >= 0:
+            if isinstance(kakuro[contRow][contCol], list):
+                spaces = getSpaces4getValues(kakuro, [contRow, contCol + 1], True)
+                break
+            contCol -= 1
+        contCol += 1
+
+        for i in range(spaces):
+            if kakuro[contRow][contCol + i] != -1:
+                newSpaces += 1
+                newSum += kakuro[contRow][contCol + i]
+        newSum = sum - newSum
+        newSpaces = spaces - newSpaces
+
+    else:
+        contRow = position[0]
+        contCol = position[1]
+        while contRow >= 0:
+            if isinstance(kakuro[contRow][contCol], list):
+                spaces = getSpaces4getValues(kakuro, [contRow + 1, contCol], False)
+                break
+            contRow -= 1
+        contRow += 1
+
+        for i in range(spaces):
+            if kakuro[contRow + i][contCol] != -1:
+                newSpaces += 1
+                newSum += kakuro[contRow + i][contCol]
+        newSum = sum - newSum
+        newSpaces = spaces - newSpaces
+
+
+    return newSum,newSpaces
+
+
+def getValuesList(leftSum,upSum,kakuro,position):
+    sumUp,spacesUp = substractVal(kakuro,position,upSum,False)
+    sumLeft, spacesLeft = substractVal(kakuro, position, leftSum, True)
+
+    valuesUp = list(range(1, 10))
+    valuesLeft = list(range(1, 10))
+
+
+    if sumUp != -25:
+        if spacesUp == 1:
+            return [min(sumLeft,sumUp)]
+        try:
+            combU = CombinationsDic[spacesUp][sumUp]
+        except KeyError:
+            return []
+        valuesLeft = []
+        for combination in combU:
+            for value in combination:
+                valuesLeft.append(value)
+    if sumLeft != -25:
+        if spacesLeft == 1:
+            return [min(sumLeft,sumUp)]
+
+        try:
+            combL = CombinationsDic[spacesLeft][sumLeft]
+        except KeyError:
+            return []
+        valuesUp = []
+        for combination in combL:
+            for value in combination:
+                valuesUp.append(value)
+
+    return getIntersection(valuesLeft,valuesUp)
+
 def solveKakuro2(kakuro):
-    global timesFinished
-    global times
-    #kakuro[12][1] == 9 and k
+    #kakuro[12][1] == 9 and kakuro[12][2] == 4 and kakuro[12][3] == 1 and kakuro[12][5] == 6 and kakuro[12][13] == 9 and kakuro[12][14] == 3 and kakuro[12][15] == 4 and kakuro[12][18] == 3 and kakuro[13][2] == 7 and kakuro[13][9] == 9 and kakuro[13][11] == 6 and kakuro[13][12] == 3 and kakuro[14][2] == 6 and kakuro[14][3] == 7 and kakuro[14][11] == 9 and kakuro[14][12] == 2 and kakuro[14][14] == 9 and kakuro[14][15] == 2 and kakuro[15][1] == 3 and kakuro[15][2] == 2 and kakuro[15][3] == 9 and kakuro[15][7] == 8 and kakuro[15][8] ==1 and kakuro[15][13] == 7 and kakuro[15][14] ==8 and kakuro[15][16] == 2
     if noEmptySpaces(kakuro):
-        timesFinished += 1
         if isKakuroSolved(kakuro):
             return True
         else:
-            
             return False
     else:
         position = getNextPosition2(kakuro)
+        #position == [19,10] or position == [16,10] or kakuro[1][9] == 8
         row = position[0]
         column = position[1]
-        leftSum = getNumberLeft(kakuro,position)
-        upSum = getNumberUp(kakuro,position)
-        values = getValues(kakuro,position,leftSum,upSum)
-        values = getNewValues(leftSum,upSum,sorted(values),position,kakuro)
+        num1 = getNumberLeft(kakuro,position)
+        if num1 == 0: num1 = -25
+        num2 = getNumberUp(kakuro,position)
+        if num2 == 0: num2= -25
+        values = getValues(kakuro,position,num1,num2)
+        #values = getValuesList(num1,num2,kakuro,position)
+        #values = getIntersection(getValues(kakuro,position,num1,num2),getValuesList(num1,num2,kakuro,position))
+        values = getNewValues(num1,num2,sorted(values),position,kakuro)
+        #values = deleteRepeatedValues2(kakuro,values,position)
         if values == []:
             return False
         length = len(values)
@@ -815,31 +964,6 @@ def solveKakuro2(kakuro):
 
         return False
 
-
-def convertirKakuro(kakuroPorDesplegar):
-    # v = StringVar()
-    # listaCASILLAS=[]
-    # aProxy = []
-    # self.variablesEntry = []
-
-    kakuro2 = []
-    filaKakuro2 = []
-
-    for i in range(0, kakuroPorDesplegar.len()):
-        for j in range(0, kakuroPorDesplegar.len()):
-
-            if kakuroPorDesplegar.board[i][j].getType() == KCell.CELL_HEADER:
-
-                filaKakuro2 += [[kakuroPorDesplegar.board[i][j].header[0],
-                                 kakuroPorDesplegar.board[i][j].header[1]]]
-            elif kakuroPorDesplegar.board[i][j].getType() == KCell.CELL_DATA:
-                filaKakuro2.append(-1)
-            else:
-                filaKakuro2.append(0)
-
-        kakuro2 += [filaKakuro2]
-        filaKakuro2 = []
-    return (kakuro2)
 
 kakuro20x20 = [[0,0,0,0,0,0,0,0,0,0,0,[3,0],[4,0],[23,0],[7,0],0,0,0,[4,0],[17,0]],
                [0,0,0,0,0,0,0,0,0,0,[0,13],-1,-1,-1,-1,0,[11,0],[16,11],-1,-1],
@@ -890,6 +1014,112 @@ kakuroExampleSolved = [[0,0,[3,0],[4,0],0],
 
 
 
+
+
+def createEmptyMatrix(size):
+    mLength = size
+    newMatrix = []
+    for x in range(mLength):
+        newList = []
+        newMatrix.append(newList)
+        for y in range(mLength):
+            newList.append(0)
+
+    return newMatrix
+
+
+def createUpSums(_kakuro):
+    values = list(range(1, 10))
+    for i in range(len(_kakuro)):
+        for j in range(len(_kakuro)):
+            position = 1
+            enquiry_sum = 0
+            if ((i+position) < len(_kakuro)) and _kakuro[i+position][j] in values:
+                while _kakuro[i+position][j] in values:
+                    enquiry_sum += _kakuro[i+position][j]
+                    position += 1
+            if isinstance(_kakuro[i][j],list):
+                _kakuro[i][j][0] = enquiry_sum
+            else:
+                _kakuro[i][j] = [enquiry_sum,0]
+
+
+
+
+def createKakuro(_size):
+
+    kakuroBoard = createEmptyMatrix(_size)
+    for i in range(1, _size - 1):  # let first and last row without data
+    # ...
+        pointer = 1
+
+        while pointer + 2 < _size:
+            enquiry_sum = 0
+            enquiry_start = random.randrange(pointer, _size - 2)
+            enquiry_size = random.randrange(2, _size - enquiry_start)
+            list_values = list(range(1, 10))
+
+            for j in range(enquiry_start, enquiry_start + enquiry_size):
+                # ... checks horizontal values
+                exclude = []
+                check = 1
+                while kakuroBoard[i - check][j]== 0 and check < _size:
+                    if list_values.count(kakuroBoard[i - check][j]):
+                        list_values.remove(kakuroBoard[i - check][j])
+                        exclude.append(kakuroBoard[i - check][j])
+                    check += 1
+
+                # ... no values to assign
+                if len(list_values) == 0:
+                    break
+
+                # ...
+                kakuroBoard[i][j] = (random.choice(list_values))
+                list_values.remove(kakuroBoard[i][j])
+                enquiry_sum += kakuroBoard[i][j]
+
+                # ... reintegrated values
+                if len(exclude) > 0:
+                    list_values.extend(exclude)
+
+            kakuroBoard[i][enquiry_start - 1] = [0,(enquiry_sum)]
+
+            # ...
+            pointer += enquiry_start + enquiry_size + 1
+
+    createUpSums(kakuroBoard)
+
+    '''for j in range(1, _size):
+        counter = 1
+        enquiry_sum = 0
+        for i in range(1, _size):
+            if kakuroBoard[i][j] != 0 and not isinstance(kakuroBoard[i][j],list):
+                counter += 1
+                enquiry_sum += kakuroBoard[i][j]
+            else:
+                if counter > 2 and isinstance(kakuroBoard[i - counter][j],list):
+                    kakuroBoard[i - counter][j][0] = enquiry_sum
+                counter = 1
+                enquiry_sum = 0
+    '''
+
+    return kakuroBoard
+
+
+
+def unSolveKakuro(_kakuro):
+    for i in range (len(_kakuro)):
+        for j in range (len(_kakuro)):
+            if _kakuro[i][j] in [1,2,3,4,5,6,7,8,9]:
+                _kakuro[i][j] = -1
+
+
+#print(kakuro20x20[0][5],kakuro20x20[1][5],kakuro20x20[2][5],kakuro20x20[3][5],kakuro20x20[4][5])
+
+#if (solveKakuro2(kakuro20x20)):
+#    print("solucionado")
+
+
 kakuroHard = [[0,0,[7,0],[17,0],0,0,0,0,0,[17,0],[28,0],0,0,0,[3,0],[4,0],[16,0],0,[7,0],[23,0]],
               [0,[16,13],-1,-1,[4,0],0,[23,0],[4,0],[16,11],-1,-1,0,0,[0,10],-1,-1,-1,[24,13],-1,-1],
               [[0,20],-1,-1,-1,-1,[19,30],-1,-1,-1,-1,-1,[4,0],0,[0,29],-1,-1,-1,-1,-1,-1],
@@ -909,25 +1139,29 @@ kakuroHard = [[0,0,[7,0],[17,0],0,0,0,0,0,[17,0],[28,0],0,0,0,[3,0],[4,0],[16,0]
               [0,[23,0],[6,8],-1,-1,[0,10],-1,-1,[0,19],-1,-1,-1,[17,0],[4,10],-1,-1,[3,0],0,[23,0],[3,0]],
               [[0,13],-1,-1,-1,[16,0],[3,0],[17,0],0,[0,10],-1,-1,[4,26],-1,-1,-1,-1,-1,[16,7],-1,-1],
               [[0,28],-1,-1,-1,-1,-1,-1,0,0,[0,19],-1,-1,-1,-1,-1,[0,20],-1,-1,-1,-1],
-              [[0,11],-1,-1,[0,19],-1,-1,-1,0,0,[0,9],-1,-1,0,0,0,0,[0,16],-1,-1,0]
+              [[0,11],-1,-1,[0,19],-1,-1,-1,0,0,[0,9],-1,-1,0,0,0,0,[0,16],-1,-1,0]]
+
+kakuroTest = [[0,0,0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0,[17,0],0],
+              [0,0,0,0,0,0,0,0,0,-1,0],
+              [[0,45],-1,-1,-1,-1,-1,-1,-1,-1,-1,0],
+              [0,0,0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0,0,0]
               ]
-#print(kakuro20x20[0][5],kakuro20x20[1][5],kakuro20x20[2][5],kakuro20x20[3][5],kakuro20x20[4][5])
 
 #kakuroo = KBoard(10)
 #kakuroo.initialize()
 #kakuroo.print()
 #kakuroBOARD = convertirKakuro(kakuroo)
-'''
 print(datetime.datetime.now().time())
-if (solveKakuro2(kakuro10x10)):
-    printMatrix(kakuro10x10)
-    print("solucionado")
-    print(timesFinished)
+if solveKakuro(kakuroHard):
+    print("Solucionado")
     print(datetime.datetime.now().time())
-'''
-#solveKakuro2(kakuro10x10)
-#printMatrix(kakuro10x10)
-#SIII LA SUMA DE LOS DE ARRIBA ES 0 QUIERE DECIR QUE LOS VALORES QUE IMPORTAN SON SOLO LOS DE LA DERECHA
+    #print(getLowestValue(30,5))
 
-#print(getLowestValue(30,5))
+
 #
