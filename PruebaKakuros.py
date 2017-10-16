@@ -137,7 +137,8 @@ CombinationsDic = {2:{3:[[1,2]],
 MEGA DICTIONARY
 '''
 
-superDictionary = {2:{3:[1,2],4:[1,3],5:[1,2,3,4],6:[1,2,4,5],7:[1,2,3,4,5,6],8:[1,2,3,5,6,7],9:[1,2,3,4,5,6,7,8,9],
+superDictionary = {1:{1:[1],2:[2],3:[3],4:[4],5:[5],6:[6],7:[7],8:[8],9:[9]},
+                    2:{3:[1,2],4:[1,3],5:[1,2,3,4],6:[1,2,4,5],7:[1,2,3,4,5,6],8:[1,2,3,5,6,7],9:[1,2,3,4,5,6,7,8,9],
                       10:[1,2,3,4,6,7,8,9],11:[2,3,4,5,6,7,8,9],12:[3,4,5,7,8,9],13:[4,5,6,7,8,9],14:[5,6,8,9],15:[6,7,8,9],
                       16:[7,9],17:[8,9]},
                    3:{6:[1,2,3],7:[1,2,4],8:[1,2,3,4,5],9:[1,2,3,4,5,6],10:[1,2,3,4,5,6,7],11:[1,2,3,4,5,6,7,8,9],
@@ -587,27 +588,30 @@ def getValues(_kakuro,_position,leftSum,upSum):
     spacesSumUp = BLACK_SPACE
     spacesSumLeft = BLACK_SPACE
 
-    while contRow >= 0:
-        if isinstance(_kakuro[contRow][contCol], list) and _kakuro[contRow][contCol][0] != 0:
-            spacesSumUp = getSpaces4getValues(_kakuro,[contRow+1,contCol],False)
-            break
-        elif _kakuro[contRow][contCol] == 0:
-            spacesSumUp = BLACK_SPACE  # -10
-            break
-        contRow -= 1
+    if upSum != BLACK_SPACE:
+        while contRow >= 0:
+            if isinstance(_kakuro[contRow][contCol], list) and _kakuro[contRow][contCol][0] != 0:
+                spacesSumUp = getSpaces4getValues(_kakuro,[contRow+1,contCol],False)
+                break
+            elif _kakuro[contRow][contCol] == 0:
+                spacesSumUp = BLACK_SPACE  # -10
+                break
+            contRow -= 1
 
 
 
     contRow = _position[0]
     contCol = _position[1]
-    while contCol >= 0:
-        if isinstance(_kakuro[contRow][contCol], list) and _kakuro[contRow][contCol][1] != 0:
-            spacesSumLeft = getSpaces4getValues(_kakuro,[contRow,contCol+1],True)
-            break
-        elif _kakuro[contRow][contCol] == 0:
-            spacesSumLeft = BLACK_SPACE  # -10
-            break
-        contCol -= 1
+
+    if leftSum != BLACK_SPACE:
+        while contCol >= 0:
+            if isinstance(_kakuro[contRow][contCol], list) and _kakuro[contRow][contCol][1] != 0:
+                spacesSumLeft = getSpaces4getValues(_kakuro,[contRow,contCol+1],True)
+                break
+            elif _kakuro[contRow][contCol] == 0:
+                spacesSumLeft = BLACK_SPACE  # -10
+                break
+            contCol -= 1
 
 
     if spacesSumUp != BLACK_SPACE and spacesSumLeft == BLACK_SPACE:
@@ -628,7 +632,9 @@ def getValues(_kakuro,_position,leftSum,upSum):
 
 
 def solveKakuro(kakuro):
+    global timesFinished
     if noEmptySpaces(kakuro):
+        timesFinished+= 1
         if isKakuroSolved(kakuro):
             return True
         else:
@@ -697,6 +703,16 @@ def substractVal(kakuro,position,sum,left):
 
     return newSum,newSpaces
 
+def getC(spaces,sum):
+    try:
+        combU = CombinationsDic[spaces][sum]
+    except KeyError:
+        return []
+    values = []
+    for combination in combU:
+        for value in combination:
+            valuesLeft.append(value)
+    return values
 
 def getValuesList(leftSum,upSum,kakuro,position):
     sumUp,spacesUp = substractVal(kakuro,position,upSum,False)
@@ -704,7 +720,7 @@ def getValuesList(leftSum,upSum,kakuro,position):
 
     valuesUp = list(range(1, 10))
     valuesLeft = list(range(1, 10))
-
+    v = list(range(1, 10))
 
 
     if sumUp != -25:
@@ -712,29 +728,53 @@ def getValuesList(leftSum,upSum,kakuro,position):
             #CAMBIAR QUE SI ES -25 PONGA LA OTRA
             if sumLeft == -25:
                 return [sumUp]
+            if spacesLeft == 1:
+                if sumLeft == sumUp:
+                    return [sumLeft]
+                else:
+                    return []
+
+            '''
+            if sumLeft <= 9 and sumUp <= 9 and spacesLeft == 1:
+                return [(max(sumLeft,sumUp))]
+            if spacesLeft != 1 and (sumUp == sumLeft):
+                return []
+            '''
             return [min(sumLeft,sumUp)]
-        try:
-            combU = CombinationsDic[spacesUp][sumUp]
-        except KeyError:
-            return []
-        valuesLeft = []
-        for combination in combU:
-            for value in combination:
-                valuesLeft.append(value)
+        else:
+            try:
+                combU = CombinationsDic[spacesUp][sumUp]
+            except KeyError:
+                return []
+            valuesLeft = []
+            for combination in combU:
+                for value in combination:
+                    valuesLeft.append(value)
     if sumLeft != -25:
         if spacesLeft == 1:
             if sumUp == -25:
                 return [sumLeft]
+            if spacesUp == 1:
+                if sumLeft == sumUp:
+                    return [sumLeft]
+                else:
+                    return []
+            '''
+            if sumLeft <= 9 and sumUp <= 9 and spacesUp == 1:
+                return [(max(sumLeft,sumUp))]
+            if spacesUp != 1 and (sumUp == sumLeft):
+                return []
+            '''
             return [min(sumLeft,sumUp)]
-
-        try:
-            combL = CombinationsDic[spacesLeft][sumLeft]
-        except KeyError:
-            return []
-        valuesUp = []
-        for combination in combL:
-            for value in combination:
-                valuesUp.append(value)
+        else:
+            try:
+                combL = CombinationsDic[spacesLeft][sumLeft]
+            except KeyError:
+                return []
+            valuesUp = []
+            for combination in combL:
+                for value in combination:
+                    valuesUp.append(value)
 
     return getIntersection(valuesLeft,valuesUp)
 
@@ -863,18 +903,17 @@ kakuroTest = [[0,0,0,0,0,0,0,0,0,0,0],
               [0,0,0,0,0,0,0,0,0,0,0],
               [0,0,0,0,0,0,0,0,0,0,0]
               ]
-
-#kakuroo = KBoard(10)
-#kakuroo.initialize()
-#kakuroo.print()
-#kakuroBOARD = convertirKakuro(kakuroo)
+kakuroo = KBoard(15)
+kakuroo.initialize()
+kakuroBOARD = convertirKakuro(kakuroo)
 #saveKakuro(kakuroBOARD)
-#kakurosaved = loadKakuros()
-#printMatrix(kakurosaved)
+kakurosaved = loadKakuros()
+printMatrix(kakurosaved)
 print(datetime.datetime.now().time())
-if solveKakuro(kakuro20x20):
+if solveKakuro(kakurosaved):
     print("Solucionado")
     print(datetime.datetime.now().time())
+    print(timesFinished)
 
     #print(getLowestValue(30,5))
 
