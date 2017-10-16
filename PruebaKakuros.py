@@ -1,6 +1,7 @@
 
 import random
 from KakuroGenerator import *
+import json
 #from NewSolver import *
 import datetime
 timesFinished = 0
@@ -184,8 +185,15 @@ BLANK_SPACE = -1
 def printMatrix(_matrix):
     matrixLength = len(_matrix)
     for x in range(matrixLength):
-        print(_matrix[x],"\n")
-
+        stringg = ""
+        for y in range(matrixLength):
+            if _matrix[x][y] == 0:
+                stringg += "|_____|"
+            elif isinstance(_matrix[x][y],list):
+                stringg += str(_matrix[x][y])
+            else:
+                stringg+= "|__"+str(_matrix[x][y])+"__|"
+        print(stringg+"\n")
 
 
 
@@ -562,38 +570,9 @@ def noEmptySpaces(array):
     return True
 
 
-def deleteRepeatedValues(kakuroM,values,position):
-    row = position[0]
-    column = position[1]
-    while row >= 0:
-        if not isinstance(kakuroM[row][column], list) or (kakuroM[row][column]) != 0 or \
-                        (kakuroM[row][column]) != BLANK_SPACE:
-            value = (kakuroM[row][column])
-            if value in values:
-                values.remove(value)
-        else:
-            break
-
-        row -= 1
-
-    row = position[0]
-    column = position[1]
-    while column >= 0:
-        if not isinstance(kakuroM[row][column], list) or (kakuroM[row][column]) != 0 or \
-                        (kakuroM[row][column]) != BLANK_SPACE:
-            value = (kakuroM[row][column])
-            if value in values:
-                values.remove(value)
-        else:
-            break
-        column -= 1
-
-    return values
-
-
 
 #works better
-def deleteRepeatedValues2(kakuroM,values,position):
+def deleteRepeatedValues(kakuroM,values,position):
     newValues = []
     for i in range(len(values)):
         if not numberRepeated(values[i],kakuroM,position):
@@ -833,11 +812,12 @@ def solveKakuro(kakuro):
         if num1 == 0: num1 = -25
         num2 = getNumberUp(kakuro, position)
         if num2 == 0: num2 = -25
-        values = getValues(kakuro, position, num1, num2)
-        # values = getValuesList(num1,num2,kakuro,position)
+        #values = getValues(kakuro, position, num1, num2)
+        #values = getValuesList(num1,num2,kakuro,position)
         #values = getIntersection(getValues(kakuro,position,num1,num2),getValuesList(num1,num2,kakuro,position))
         #values = getNewValues(num1, num2, sorted(values), position, kakuro)
-        values = deleteRepeatedValues2(kakuro,getIntersection(getValues(kakuro,position,num1,num2),getValuesList(num1,num2,kakuro,position)),position)
+        values = deleteRepeatedValues(kakuro,getIntersection(getValues(kakuro,position,num1,num2),getValuesList(num1,num2,kakuro,position)),position)
+        #values = deleteRepeatedValues2(kakuro,getValuesList(num1,num2,kakuro,position),position)
         if values == []:
             return False
         for i in range(len(values)):
@@ -902,8 +882,12 @@ def getValuesList(leftSum,upSum,kakuro,position):
     valuesLeft = list(range(1, 10))
 
 
+
     if sumUp != -25:
         if spacesUp == 1:
+            #CAMBIAR QUE SI ES -25 PONGA LA OTRA
+            if sumLeft == -25:
+                return [sumUp]
             return [min(sumLeft,sumUp)]
         try:
             combU = CombinationsDic[spacesUp][sumUp]
@@ -915,6 +899,8 @@ def getValuesList(leftSum,upSum,kakuro,position):
                 valuesLeft.append(value)
     if sumLeft != -25:
         if spacesLeft == 1:
+            if sumUp == -25:
+                return [sumLeft]
             return [min(sumLeft,sumUp)]
 
         try:
@@ -1118,7 +1104,18 @@ def unSolveKakuro(_kakuro):
 
 #if (solveKakuro2(kakuro20x20)):
 #    print("solucionado")
+def saveKakuro(kakuro):
+    # Abrir el archivo y guardar los kakuros
+    file = open("savedKakuros.txt", "w")
+    file.write(str(kakuro))
+    file.write("$")
 
+def loadKakuros():
+    # Leer los kakuros
+    file = open("savedKakuros.txt", "r")
+    listaConStrings = file.readlines()[0].split("$")
+    lista = json.loads(listaConStrings[0])
+    return lista
 
 kakuroHard = [[0,0,[7,0],[17,0],0,0,0,0,0,[17,0],[28,0],0,0,0,[3,0],[4,0],[16,0],0,[7,0],[23,0]],
               [0,[16,13],-1,-1,[4,0],0,[23,0],[4,0],[16,11],-1,-1,0,0,[0,10],-1,-1,-1,[24,13],-1,-1],
@@ -1157,11 +1154,21 @@ kakuroTest = [[0,0,0,0,0,0,0,0,0,0,0],
 #kakuroo.initialize()
 #kakuroo.print()
 #kakuroBOARD = convertirKakuro(kakuroo)
+#saveKakuro(kakuroBOARD)
+kakurosaved = loadKakuros()
+#printMatrix(kakurosaved)
 print(datetime.datetime.now().time())
-if solveKakuro(kakuroHard):
+if solveKakuro(kakurosaved):
     print("Solucionado")
     print(datetime.datetime.now().time())
+
     #print(getLowestValue(30,5))
 
+'''
+15:17:34.221890
+Solucionado
+15:18:52.729283
 
+
+'''
 #
