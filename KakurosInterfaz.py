@@ -6,6 +6,7 @@ import json
 
 
 from PruebaKakuros import *
+from NewGenerator import *
 
 
 #from PruebaKakurosHilos import *
@@ -190,11 +191,12 @@ class Application(Frame):
         except Exception as e:
             print(e)
             
-
+        
         self.new_window()
         
         newKakuro = self.convertirKakuro(newKakuro)
-
+        newKakuro = createBoard(size)
+        hideSolution(newKakuro)
 
         self.createGraphicKakuro(self.frame,newKakuro)
 
