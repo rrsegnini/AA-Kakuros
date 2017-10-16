@@ -2,7 +2,6 @@
 import random
 from KakuroGenerator import *
 import json
-#from NewSolver import *
 import datetime
 timesFinished = 0
 
@@ -138,8 +137,6 @@ CombinationsDic = {2:{3:[[1,2]],
 MEGA DICTIONARY
 '''
 
-masterDictionary = {2:{3:[[1,2]],4:[[1,3]],5:[[1,4],[2,3]],6:[[1,5],[2,4]]},3:{},4:{},5:{},6:{},7:{},8:{},9:{}}
-
 superDictionary = {2:{3:[1,2],4:[1,3],5:[1,2,3,4],6:[1,2,4,5],7:[1,2,3,4,5,6],8:[1,2,3,5,6,7],9:[1,2,3,4,5,6,7,8,9],
                       10:[1,2,3,4,6,7,8,9],11:[2,3,4,5,6,7,8,9],12:[3,4,5,7,8,9],13:[4,5,6,7,8,9],14:[5,6,8,9],15:[6,7,8,9],
                       16:[7,9],17:[8,9]},
@@ -211,7 +208,7 @@ def getNum():
     num = random.randint(0,45)
     return num
 
-#crearMatriz()
+
 
 kakuroExample = [[0,0,[3,0],[4,0],0],
                  [0,[5,4],-1,-1,0],
@@ -225,159 +222,6 @@ kakuroExampleSolved = [[0,0,[3,0],[4,0],0],
                  [0,1,0,0,0],
                  [0,0,0,0,0]]
 
-
-
-'''
-FALTA ARREGLARLE LA "PODA" porque dejo de servir con esta nueva version
-
-'''
-def solve(kakuro,position):
-    #printMatrix(kakuro)
-    #print("MATRIZZ")
-    if isKakuroSolved(kakuro):
-        return True
-    elif noEmptySpaces(kakuro):
-        return False
-    else:
-        #position = getPosition(kakuro)
-        position = getNextPosition(kakuro,position)
-        row = position[0]
-        column = position[1]
-        if kakuro[row][column] == BLANK_SPACE:
-            num1 = getNumberLeft(kakuro,position)
-            num2 = getNumberUp(kakuro,position)
-
-            values = getNewValues(num1,num2,[1,2,3,4,5,6,7,8,9],position,kakuro) #solo quita si digamos es 5 el numero
-            #deja del 1 al 4. Pero si el numero al que se tiene que llegar es
-            #22, esta funcion no hace nada. retorna la misma lista del [1...9]
-            valuesUsed = []
-            cont = 0
-            spaces2theRight = 9
-            spacesDown = 9
-            while len(valuesUsed) != len(values):
-                #randomValue = random.choice(values)
-                value = values[cont]
-                #el number repeated es el mas importante (revisa si no se esta repitiendo el numero)
-                if not numberRepeated(value, kakuro, position):
-                    if num1 != 0:
-                        num1 = getNewSum(kakuro,position,num1,True)
-                        spaces2theRight = getSpaces(kakuro,position,True)
-                    if num2 != 0:
-                        num2 = getNewSum(kakuro, position, num2, False)
-                        spacesDown = getSpaces(kakuro,position,False)
-
-
-                    if isValueUseful(num1,spaces2theRight,value) and isValueUseful(num2,spacesDown,value):
-                        kakuro[row][column] = value
-                        valuesUsed.append(value)
-                        if solve(kakuro,position):
-                            return True
-                        else:
-                            kakuro[row][column] = BLANK_SPACE
-
-                    if value not in valuesUsed:
-                        valuesUsed.append(value)
-                elif value not in valuesUsed:
-                        valuesUsed.append(value)
-                cont += 1
-
-        return False
-
-
-
-
-def solveBruteForce(kakuro,position):
-    #printMatrix(kakuro)
-    #print("MATRIZZ")
-    if isKakuroSolved(kakuro):
-        return True
-    elif noEmptySpaces(kakuro):
-        return False
-    else:
-        #position = getPosition(kakuro)
-        position = getNextPosition(kakuro,position)
-        row = position[0]
-        column = position[1]
-        if kakuro[row][column] == BLANK_SPACE:
-            num1 = getNumberLeft(kakuro,position)
-            num2 = getNumberUp(kakuro,position)
-
-            values = getNewValues(num1,num2,[1,2,3,4,5,6,7,8,9],position,kakuro) #solo quita si digamos es 5 el numero
-            #deja del 1 al 4. Pero si el numero al que se tiene que llegar es
-            #22, esta funcion no hace nada. retorna la misma lista del [1...9]
-            valuesUsed = []
-            cont = 0
-            while len(valuesUsed) != len(values):
-                #randomValue = random.choice(values)
-                value = values[cont]
-                #el number repeated es el mas importante (revisa si no se esta repitiendo el numero)
-                if not numberRepeated(value, kakuro, position):
-                    kakuro[row][column] = value
-                    valuesUsed.append(value)
-                    if solveBruteForce(kakuro,position):
-                        return True
-                    else:
-                        kakuro[row][column] = BLANK_SPACE
-
-                elif value not in valuesUsed:
-                        valuesUsed.append(value)
-                cont += 1
-
-        return False
-
-
-
-
-
-
-#printMatrix(createEmptyMatrix())
-
-#if solveK(kakuroExample,10):
-#    print("HOLA")
-
-
-#arrayPrueba = [[0,45],1,2,3,4,5,6,7,8,9]
-#print (getSum(arrayPrueba,0,1,len(arrayPrueba),False))
-
-#print(getNumberUp(kakuroExample,[1,2]))
-#print(getNumberLeft(kakuroExample,[1,2]))
-
-
-
-#if isKakuroSolved(kakuroExampleSolved):
-#    print("HOLAAAAAAA")
-#print(getSpaces(kakuroExample,[1,2],True))
-
-#if (solveBruteForce(kakuroExample,[0,0])):
-#    print("solucionado")
-
-#if (solve(kakuroExample,[0,0])):
-#    print("solucionado")
-
-
-
-
-def decision(probability):
-    r = random.random()
-    return r < probability
-
-
-
-#kakuro = generateKakuro(10)
-#printMatrix(kakuro)
-##values = [1,2,3,4,5,6,7,8,9]
-#print(len(values))
-#print(values[2:])
-#print(isValueUseful(17,2,8))
-################################################
-################################################
-################################################
-################################################
-################################################
-################################################
-################################################
-################################################
-################################################
 
 def getSum(array,row,column,arraylength,down): #position is an array of two elements
     sum = 0
@@ -535,23 +379,9 @@ def getPosition(kakuro):
         if not isinstance(kakuro[row][column],list) and kakuro[row][column] == BLANK_SPACE:
             return [row,column]
 
-def getNextPosition(kakuro,position):
-    row = position[0]
-    column = position[1]
-    length = len(kakuro)
-    while row < length:
-        if (column) == length:
-            column = 0
-        while column < length:
-            value = kakuro[row][column]
-            if kakuro[row][column] == -1:
-                return [row,column]
-            column += 1
-        row += 1
-
 
 #working better
-def getNextPosition2(kakuro):
+def getNextPosition(kakuro):
     for i in range(len(kakuro)):
         for j in range(len(kakuro)):
             if kakuro[i][j] == -1:
@@ -804,20 +634,14 @@ def solveKakuro(kakuro):
         else:
             return False
     else:
-        position = getNextPosition2(kakuro)
-        # position == [19,10] or position == [16,10] or kakuro[1][9] == 8
+        position = getNextPosition(kakuro)
         row = position[0]
         column = position[1]
         num1 = getNumberLeft(kakuro, position)
         if num1 == 0: num1 = -25
         num2 = getNumberUp(kakuro, position)
         if num2 == 0: num2 = -25
-        #values = getValues(kakuro, position, num1, num2)
-        #values = getValuesList(num1,num2,kakuro,position)
-        #values = getIntersection(getValues(kakuro,position,num1,num2),getValuesList(num1,num2,kakuro,position))
-        #values = getNewValues(num1, num2, sorted(values), position, kakuro)
         values = deleteRepeatedValues(kakuro,getIntersection(getValues(kakuro,position,num1,num2),getValuesList(num1,num2,kakuro,position)),position)
-        #values = deleteRepeatedValues2(kakuro,getValuesList(num1,num2,kakuro,position),position)
         if values == []:
             return False
         for i in range(len(values)):
@@ -914,42 +738,6 @@ def getValuesList(leftSum,upSum,kakuro,position):
 
     return getIntersection(valuesLeft,valuesUp)
 
-def solveKakuro2(kakuro):
-    #kakuro[12][1] == 9 and kakuro[12][2] == 4 and kakuro[12][3] == 1 and kakuro[12][5] == 6 and kakuro[12][13] == 9 and kakuro[12][14] == 3 and kakuro[12][15] == 4 and kakuro[12][18] == 3 and kakuro[13][2] == 7 and kakuro[13][9] == 9 and kakuro[13][11] == 6 and kakuro[13][12] == 3 and kakuro[14][2] == 6 and kakuro[14][3] == 7 and kakuro[14][11] == 9 and kakuro[14][12] == 2 and kakuro[14][14] == 9 and kakuro[14][15] == 2 and kakuro[15][1] == 3 and kakuro[15][2] == 2 and kakuro[15][3] == 9 and kakuro[15][7] == 8 and kakuro[15][8] ==1 and kakuro[15][13] == 7 and kakuro[15][14] ==8 and kakuro[15][16] == 2
-    if noEmptySpaces(kakuro):
-        if isKakuroSolved(kakuro):
-            return True
-        else:
-            return False
-    else:
-        position = getNextPosition2(kakuro)
-        #position == [19,10] or position == [16,10] or kakuro[1][9] == 8
-        row = position[0]
-        column = position[1]
-        num1 = getNumberLeft(kakuro,position)
-        if num1 == 0: num1 = -25
-        num2 = getNumberUp(kakuro,position)
-        if num2 == 0: num2= -25
-        values = getValues(kakuro,position,num1,num2)
-        #values = getValuesList(num1,num2,kakuro,position)
-        #values = getIntersection(getValues(kakuro,position,num1,num2),getValuesList(num1,num2,kakuro,position))
-        values = getNewValues(num1,num2,sorted(values),position,kakuro)
-        #values = deleteRepeatedValues2(kakuro,values,position)
-        if values == []:
-            return False
-        length = len(values)
-        while length != 0:
-            randomValue = random.choice(values)
-            values.remove(randomValue)
-            kakuro[row][column] = randomValue
-            if solveKakuro2(kakuro):
-                return True
-            else:
-                kakuro[row][column] = BLANK_SPACE
-            length -= 1
-
-        return False
-
 
 kakuro20x20 = [[0,0,0,0,0,0,0,0,0,0,0,[3,0],[4,0],[23,0],[7,0],0,0,0,[4,0],[17,0]],
                [0,0,0,0,0,0,0,0,0,0,[0,13],-1,-1,-1,-1,0,[11,0],[16,11],-1,-1],
@@ -1030,80 +818,6 @@ def createUpSums(_kakuro):
                 _kakuro[i][j] = [enquiry_sum,0]
 
 
-
-
-def createKakuro(_size):
-
-    kakuroBoard = createEmptyMatrix(_size)
-    for i in range(1, _size - 1):  # let first and last row without data
-    # ...
-        pointer = 1
-
-        while pointer + 2 < _size:
-            enquiry_sum = 0
-            enquiry_start = random.randrange(pointer, _size - 2)
-            enquiry_size = random.randrange(2, _size - enquiry_start)
-            list_values = list(range(1, 10))
-
-            for j in range(enquiry_start, enquiry_start + enquiry_size):
-                # ... checks horizontal values
-                exclude = []
-                check = 1
-                while kakuroBoard[i - check][j]== 0 and check < _size:
-                    if list_values.count(kakuroBoard[i - check][j]):
-                        list_values.remove(kakuroBoard[i - check][j])
-                        exclude.append(kakuroBoard[i - check][j])
-                    check += 1
-
-                # ... no values to assign
-                if len(list_values) == 0:
-                    break
-
-                # ...
-                kakuroBoard[i][j] = (random.choice(list_values))
-                list_values.remove(kakuroBoard[i][j])
-                enquiry_sum += kakuroBoard[i][j]
-
-                # ... reintegrated values
-                if len(exclude) > 0:
-                    list_values.extend(exclude)
-
-            kakuroBoard[i][enquiry_start - 1] = [0,(enquiry_sum)]
-
-            # ...
-            pointer += enquiry_start + enquiry_size + 1
-
-    createUpSums(kakuroBoard)
-
-    '''for j in range(1, _size):
-        counter = 1
-        enquiry_sum = 0
-        for i in range(1, _size):
-            if kakuroBoard[i][j] != 0 and not isinstance(kakuroBoard[i][j],list):
-                counter += 1
-                enquiry_sum += kakuroBoard[i][j]
-            else:
-                if counter > 2 and isinstance(kakuroBoard[i - counter][j],list):
-                    kakuroBoard[i - counter][j][0] = enquiry_sum
-                counter = 1
-                enquiry_sum = 0
-    '''
-
-    return kakuroBoard
-
-
-
-def unSolveKakuro(_kakuro):
-    for i in range (len(_kakuro)):
-        for j in range (len(_kakuro)):
-            if _kakuro[i][j] in [1,2,3,4,5,6,7,8,9]:
-                _kakuro[i][j] = -1
-
-
-#print(kakuro20x20[0][5],kakuro20x20[1][5],kakuro20x20[2][5],kakuro20x20[3][5],kakuro20x20[4][5])
-
-#if (solveKakuro2(kakuro20x20)):
-#    print("solucionado")
 def saveKakuro(kakuro):
     # Abrir el archivo y guardar los kakuros
     file = open("savedKakuros.txt", "w")
@@ -1155,10 +869,10 @@ kakuroTest = [[0,0,0,0,0,0,0,0,0,0,0],
 #kakuroo.print()
 #kakuroBOARD = convertirKakuro(kakuroo)
 #saveKakuro(kakuroBOARD)
-kakurosaved = loadKakuros()
+#kakurosaved = loadKakuros()
 #printMatrix(kakurosaved)
 print(datetime.datetime.now().time())
-if solveKakuro(kakurosaved):
+if solveKakuro(kakuro20x20):
     print("Solucionado")
     print(datetime.datetime.now().time())
 
