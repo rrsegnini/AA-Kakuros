@@ -711,17 +711,19 @@ def getC(spaces,sum):
     values = []
     for combination in combU:
         for value in combination:
-            valuesLeft.append(value)
+            values.append(value)
     return values
 
 def getValuesList(leftSum,upSum,kakuro,position):
     sumUp,spacesUp = substractVal(kakuro,position,upSum,False)
+    if upSum == -25:
+        sumUp = -25
     sumLeft, spacesLeft = substractVal(kakuro, position, leftSum, True)
+    if leftSum == -25:
+        sumLeft = -25
 
     valuesUp = list(range(1, 10))
     valuesLeft = list(range(1, 10))
-    v = list(range(1, 10))
-
 
     if sumUp != -25:
         if spacesUp == 1:
@@ -733,14 +735,12 @@ def getValuesList(leftSum,upSum,kakuro,position):
                     return [sumLeft]
                 else:
                     return []
-
-            '''
-            if sumLeft <= 9 and sumUp <= 9 and spacesLeft == 1:
-                return [(max(sumLeft,sumUp))]
-            if spacesLeft != 1 and (sumUp == sumLeft):
-                return []
-            '''
-            return [min(sumLeft,sumUp)]
+            else:
+                c  = getC(spacesLeft,sumLeft)
+                if sumUp in c:
+                    return [min(sumLeft,sumUp)]
+                else:
+                    return []
         else:
             try:
                 combU = CombinationsDic[spacesUp][sumUp]
@@ -759,13 +759,13 @@ def getValuesList(leftSum,upSum,kakuro,position):
                     return [sumLeft]
                 else:
                     return []
-            '''
-            if sumLeft <= 9 and sumUp <= 9 and spacesUp == 1:
-                return [(max(sumLeft,sumUp))]
-            if spacesUp != 1 and (sumUp == sumLeft):
-                return []
-            '''
-            return [min(sumLeft,sumUp)]
+            else:
+                c = getC(spacesUp,sumUp)
+                if sumLeft in c:
+                    return [min(sumLeft, sumUp)]
+                else:
+                    return []
+
         else:
             try:
                 combL = CombinationsDic[spacesLeft][sumLeft]
@@ -860,24 +860,15 @@ def createUpSums(_kakuro):
 
 def saveKakuro(kakuro):
     # Abrir el archivo y guardar los kakuros
-    file = open("savedKakuros.txt", "r")
-    old = file.readlines()
-    
     file = open("savedKakuros.txt", "w")
-    for i in old:
-        if i != '':
-            file.write(i)
     file.write(str(kakuro))
     file.write("$")
-    file.close()
-    
 
 def loadKakuros():
     # Leer los kakuros
     file = open("savedKakuros.txt", "r")
     listaConStrings = file.readlines()[0].split("$")
-    for i in listaConString:
-        lista,append( json.loads(i))
+    lista = json.loads(listaConStrings[0])
     return lista
 
 kakuroHard = [[0,0,[7,0],[17,0],0,0,0,0,0,[17,0],[28,0],0,0,0,[3,0],[4,0],[16,0],0,[7,0],[23,0]],
@@ -912,10 +903,9 @@ kakuroTest = [[0,0,0,0,0,0,0,0,0,0,0],
               [0,0,0,0,0,0,0,0,0,0,0],
               [0,0,0,0,0,0,0,0,0,0,0]
               ]
-'''
-kakuroo = KBoard(15)
-kakuroo.initialize()
-kakuroBOARD = convertirKakuro(kakuroo)
+#kakuroo = KBoard(11)
+#kakuroo.initialize()
+#kakuroBOARD = convertirKakuro(kakuroo)
 #saveKakuro(kakuroBOARD)
 kakurosaved = loadKakuros()
 printMatrix(kakurosaved)
@@ -927,10 +917,21 @@ if solveKakuro(kakurosaved):
 
     #print(getLowestValue(30,5))
 
-
+'''
 15:17:34.221890
 Solucionado
 15:18:52.729283
+ ___________ ___________ ___________ ___________ ____[12, 0] ____[23, 0] ____[24, 0] ____[25, 0] ____[17, 0] ___________ ___________
+ ___________ ___________ ___________ ____[0, 29] 00000000009 00000000001 00000000002 00000000006 00000000008 00000000003 ___________
+ ____[0, 37] 00000000001 00000000004 00000000005 00000000003 00000000006 00000000007 00000000002 00000000009 ___________ ___________
+ ___________ ___________ _____[7, 0] _____[7, 0] ___[14, 21] 00000000004 00000000008 00000000009 ___________ ___________ ___________
+ ____[0, 45] 00000000002 00000000004 00000000003 00000000005 00000000007 00000000006 00000000008 00000000009 00000000001 ___________
+ ___________ ____[0, 22] 00000000003 00000000004 00000000009 00000000005 00000000001 ___________ ____[13, 0] ___________ ___________
+ ___________ ___________ ___________ ___________ ___________ ___________ ____[14, 0] ___[15, 14] 00000000005 00000000009 ___________
+ ___________ ___________ ___________ ___________ ___________ ____[0, 23] 00000000008 00000000009 00000000006 ___________ ___________
+ ___________ ___________ ___________ ___________ ___________ ____[0, 14] 00000000001 00000000006 00000000002 00000000005 ___________
+ ____[0, 34] 00000000009 00000000003 00000000002 00000000007 00000000008 00000000005 ___________ ___________ ___________ ___________
+ ___________ ___________ ___________ ___________ ___________ ___________ ___________ ___________ ___________ ___________ ___________
 
 
 '''
