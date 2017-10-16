@@ -1,5 +1,6 @@
 
 import random
+import os
 
 
 
@@ -785,6 +786,13 @@ def solveKakuro2(kakuro):
             return False
         length = len(values)
         while length != 0:
+            newpid = os.fork()
+            if newpid == 0:
+                print("Hijo")
+            else:
+                pids = (os.getpid(), newpid)
+                print("parent: %d, child: %d\n" % pids)
+
             randomValue = random.choice(values)
             values.remove(randomValue)
             kakuro[row][column] = randomValue
@@ -850,8 +858,8 @@ kakuroExampleSolved = [[0,0,[3,0],[4,0],0],
 
 #print(kakuro20x20[0][5],kakuro20x20[1][5],kakuro20x20[2][5],kakuro20x20[3][5],kakuro20x20[4][5])
 
-#if (solveKakuro2(kakuro20x20)):
-#    print("solucionado")
+if (solveKakuro2(kakuro20x20)):
+    print("solucionado")
 
 
 #print(getLowestValue(30,5))

@@ -81,8 +81,8 @@ class Application(Frame):
         #canvas.create_image(150, 150)
         root.after(0, self.update, 0)
         
-        photo = PhotoImage(file = 'KakuroMain3.png')
-        generarBTN = PhotoImage(file = 'generarBTN2.png')
+        photo = PhotoImage(file = 'imgs/KakuroMain3.png')
+        generarBTN = PhotoImage(file = 'imgs/generarBTN2.png')
         
         lbl = Label(image = photo,highlightthickness=0, borderwidth=0)
         lbl.image = photo #keeping a reference in this line
@@ -105,16 +105,21 @@ class Application(Frame):
                              font=("Helvetica", 12))
         kakuroList.grid(row=5, column=0)
 
+        
+        #Abrir y guardar los kakuros
         file = open("savedKakuros.txt", "w")
         file.write(str(kakuro10x10))
         file.write("$")
         file.write(str(kakuro20x20))
 
-
+        #Leer los kakuros
         file = open("savedKakuros.txt", "r")
-        #rint(json.loads(file.readlines()[0].split("$")[0]))
-        #print(file.readlines()[0].split("$"))
         exmpls=file.readlines()[0].split("$")
+        lista = json.loads(exmpls[0])
+
+
+
+
         for i in exmpls:
             print(i)
             kakuroList.insert(END, str(len(json.loads(i))).rjust(32))
@@ -181,8 +186,8 @@ class Application(Frame):
 
     def createGraphicKakuro(self,newWin, kakuroPorDesplegar):
 
-        verificarBTN = PhotoImage(file = 'verificarBTN.png')
-        resolverBTN = PhotoImage(file = 'resolverBTN.png')
+        verificarBTN = PhotoImage(file = 'imgs/verificarBTN.png')
+        resolverBTN = PhotoImage(file = 'imgs/resolverBTN.png')
         if (len(kakuroPorDesplegar)*100<screen_width) and len(kakuroPorDesplegar)*65 < screen_height:
             newWin.config(width=len(kakuroPorDesplegar)*100, height=len(kakuroPorDesplegar)*5, bg="black")
             self.canvas.configure(width=len(kakuroPorDesplegar)*100, height=len(kakuroPorDesplegar)*80)
@@ -193,8 +198,8 @@ class Application(Frame):
         #scrollbar = Scrollbar(newWin)
         #scrollbar.pack(side=RIGHT, fill=Y)
         #newWin = self.new_window()
-        photoBLACK = PhotoImage(file="BLACKsmall4.png")
-        photoSLASH = PhotoImage(file="SLASHsmall.png")
+        photoBLACK = PhotoImage(file="imgs/BLACKsmall4.png")
+        photoSLASH = PhotoImage(file="imgs/SLASHsmall.png")
         
         contX = 0
         contY = 0
@@ -328,7 +333,7 @@ class Application(Frame):
         setGlobalThreads(numThreads)
 
         solveKakuro2(kakuro)
-        print(kakuro)
+        #print(kakuro)
         '''
         for x in range(0, len(kakuro)):
             for y in range(0, len(kakuro[0])):
@@ -395,7 +400,7 @@ class Application(Frame):
         self.createWidgets()
 
 root = Tk()
-frames = [PhotoImage(file='background-gif-9.gif',format = 'gif -index %i' %(i)) for i in range(46)]
+frames = [PhotoImage(file='imgs/background-gif-9.gif',format = 'gif -index %i' %(i)) for i in range(46)]
 canvas = Canvas( bg="black", width=500, height=250,highlightthickness=0,borderwidth=0)
 canvas.grid(column=0, row=0)
         
