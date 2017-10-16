@@ -635,6 +635,8 @@ def solveKakuro(kakuro):
     global timesFinished
     if noEmptySpaces(kakuro):
         timesFinished+= 1
+        print("Not Finished yet")
+        print(datetime.datetime.now().time())
         if isKakuroSolved(kakuro):
             return True
         else:
@@ -711,7 +713,7 @@ def getC(spaces,sum):
     values = []
     for combination in combU:
         for value in combination:
-            valuesLeft.append(value)
+            values.append(value)
     return values
 
 def getValuesList(leftSum,upSum,kakuro,position):
@@ -733,14 +735,12 @@ def getValuesList(leftSum,upSum,kakuro,position):
                     return [sumLeft]
                 else:
                     return []
-
-            '''
-            if sumLeft <= 9 and sumUp <= 9 and spacesLeft == 1:
-                return [(max(sumLeft,sumUp))]
-            if spacesLeft != 1 and (sumUp == sumLeft):
-                return []
-            '''
-            return [min(sumLeft,sumUp)]
+            else:
+                c  = getC(spacesLeft,sumLeft)
+                if sumUp in c:
+                    return [min(sumLeft,sumUp)]
+                else:
+                    return []
         else:
             try:
                 combU = CombinationsDic[spacesUp][sumUp]
@@ -759,13 +759,13 @@ def getValuesList(leftSum,upSum,kakuro,position):
                     return [sumLeft]
                 else:
                     return []
-            '''
-            if sumLeft <= 9 and sumUp <= 9 and spacesUp == 1:
-                return [(max(sumLeft,sumUp))]
-            if spacesUp != 1 and (sumUp == sumLeft):
-                return []
-            '''
-            return [min(sumLeft,sumUp)]
+            else:
+                c = getC(spacesUp,sumUp)
+                if sumLeft in c:
+                    return [min(sumLeft, sumUp)]
+                else:
+                    return []
+
         else:
             try:
                 combL = CombinationsDic[spacesLeft][sumLeft]
@@ -903,9 +903,9 @@ kakuroTest = [[0,0,0,0,0,0,0,0,0,0,0],
               [0,0,0,0,0,0,0,0,0,0,0],
               [0,0,0,0,0,0,0,0,0,0,0]
               ]
-kakuroo = KBoard(15)
-kakuroo.initialize()
-kakuroBOARD = convertirKakuro(kakuroo)
+#kakuroo = KBoard(8)
+#kakuroo.initialize()
+#kakuroBOARD = convertirKakuro(kakuroo)
 #saveKakuro(kakuroBOARD)
 kakurosaved = loadKakuros()
 printMatrix(kakurosaved)
@@ -923,5 +923,14 @@ Solucionado
 15:18:52.729283
 
 
+
+ ________ _[15, 0] _[27, 0] _[13, 0] _[19, 0] _[27, 0] ________ ________
+ _[0, 29] 00000003 00000006 00000009 00000004 00000005 00000002 ________
+ _[0, 19] 00000005 00000001 00000003 00000008 00000002 ________ ________
+ _[0, 23] 00000004 00000008 00000001 00000007 00000003 ________ ________
+ __[0, 8] 00000001 00000007 ________ _[8, 15] 00000007 00000008 ________
+ _[0, 23] 00000002 00000005 00000009 00000003 00000004 ________ ________
+ ________ ________ ________ _[0, 15] 00000005 00000006 00000004 ________
+ ________ ________ ________ ________ ________ ________ ________ ________
 '''
 #
