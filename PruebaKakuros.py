@@ -860,15 +860,24 @@ def createUpSums(_kakuro):
 
 def saveKakuro(kakuro):
     # Abrir el archivo y guardar los kakuros
+    file = open("savedKakuros.txt", "r")
+    old = file.readlines()
+    
     file = open("savedKakuros.txt", "w")
+    for i in old:
+        if i != '':
+            file.write(i)
     file.write(str(kakuro))
     file.write("$")
+    file.close()
+    
 
 def loadKakuros():
     # Leer los kakuros
     file = open("savedKakuros.txt", "r")
     listaConStrings = file.readlines()[0].split("$")
-    lista = json.loads(listaConStrings[0])
+    for i in listaConString:
+        lista,append( json.loads(i))
     return lista
 
 kakuroHard = [[0,0,[7,0],[17,0],0,0,0,0,0,[17,0],[28,0],0,0,0,[3,0],[4,0],[16,0],0,[7,0],[23,0]],
@@ -903,6 +912,7 @@ kakuroTest = [[0,0,0,0,0,0,0,0,0,0,0],
               [0,0,0,0,0,0,0,0,0,0,0],
               [0,0,0,0,0,0,0,0,0,0,0]
               ]
+'''
 kakuroo = KBoard(15)
 kakuroo.initialize()
 kakuroBOARD = convertirKakuro(kakuroo)
@@ -917,7 +927,7 @@ if solveKakuro(kakurosaved):
 
     #print(getLowestValue(30,5))
 
-'''
+
 15:17:34.221890
 Solucionado
 15:18:52.729283

@@ -5,10 +5,10 @@ import winsound
 import json
 
 
-#from PruebaKakuros import *
+from PruebaKakuros import *
 
 
-from PruebaKakurosHilos import *
+#from PruebaKakurosHilos import *
 
 
 from KakuroGenerator import *
@@ -99,33 +99,52 @@ class Application(Frame):
         gen.image = generarBTN
 
 
-        Label(text="Kakuros de ejemplo:", bg="black",fg="DeepPink2",
+        Label(text="Kakuros de ejemplo:", bg="black",fg="DeepPink4",
                              font=("Helvetica", 12)).grid(row=4,column=0)
-        kakuroList = Listbox(bg="black", fg="DeepPink2", width=30,height=5,
+        global kakuroList
+        kakuroList = Listbox(bg="black", fg="DeepPink4", width=30,height=5,
                              font=("Helvetica", 12))
         kakuroList.grid(row=5, column=0)
-
+        '''
         file = open("savedKakuros.txt", "w")
         file.write(str(kakuro10x10))
         file.write("$")
         file.write(str(kakuro20x20))
+        '''
 
-
+        exmpls = self.updateExampleList(kakuroList)
+        
+       #k = exmpls[kakuroList.curselection()[0]]
+        gen2 = Button(text="Generar ejemplo", highlightthickness=0, borderwidth=0, image=generarBTN,
+            command=lambda: self.createKakuroExample(json.loads(exmpls[kakuroList.curselection()[0]])))
+        gen2.grid(row=6, column=0)
+        #gen2.image = generarBTN
+        
+    def updateExampleList(self, kakuroList):
         file = open("savedKakuros.txt", "r")
-        #rint(json.loads(file.readlines()[0].split("$")[0]))
-        #print(file.readlines()[0].split("$"))
+        #print (file.readlines()[0].split("$"))
         exmpls=file.readlines()[0].split("$")
+        
         for i in exmpls:
             print(i)
-            kakuroList.insert(END, str(len(json.loads(i))).rjust(32))
+            if i != '':
+                kakuroList.insert(END, str(len(json.loads(i))).rjust(32))
+        #if file.readlines():
+            #exmpls=
+            #file.readlines()[0].split("$")
+            #print (exmpls)
+ 
+            #for i in exmpls:
+                #print(i)
+                #kakuroList.insert(END, str(len(json.loads(i))).rjust(32))
+        
         file.close()
-
-       #k = exmpls[kakuroList.curselection()[0]]
-        gen2 = Button(text="Generar ejemplo", highlightthickness=0, borderwidth=0,# image=generarBTN,
-            command=lambda: self.createKakuroExample(json.loads(exmpls[kakuroList.curselection()[0]])))
-        gen2.grid(row=5, column=0)
-        #gen2.image = generarBTN
-
+        return exmpls
+    def saveKakuroKernel(self, kak):
+        saveKakuro(kak)
+        kakuroList.delete(0, END)
+        self.mainWindow()
+        #self.updateExampleList(kakuroList)
         
     def new_window(self):
         self.newWindow = Toplevel(root)
@@ -290,14 +309,14 @@ class Application(Frame):
                             troughcolor="Gray10", fg="DeepPink2", highlightcolor="red", highlightthickness=0,
                             borderwidth=0)
         forksScale.grid(row=4, column=contX)
+
+        self.guardarButton = Button(newWin,text="Guardar \nkakuro", font=("Helvetica", 13),# image=resolverBTN,
+                                      command=lambda:self.saveKakuroKernel(kakuroPorDesplegar)
+                                     ,highlightthickness=0,borderwidth=1)
+        #self.resolverButton.image=resolverBTN
+        self.guardarButton.grid(row=5, column=contX, sticky=N+W+S+E)
    
     def convertirKakuro(self,kakuroPorDesplegar):
-
-        #v = StringVar()
-        #listaCASILLAS=[]
-        #aProxy = []  
-        #self.variablesEntry = []
-        
         kakuro2 = []
         filaKakuro2 = []
 
@@ -322,26 +341,14 @@ class Application(Frame):
     def solucionarKakuro(self, listaCASILLAS, kakuro, _newWin, numThreads):
         listaSOLUCIONES=[]
         copiaKakuroOriginal = copy.deepcopy(kakuro)
-        
-        cont = 0
 
-        setGlobalThreads(numThreads)
+        #setGlobalThreads(numThreads)
 
-        solveKakuro2(kakuro)
-        print(kakuro)
-        '''
-        for x in range(0, len(kakuro)):
-            for y in range(0, len(kakuro[0])):
-                if kakuro[x][y] == -1:
-                    listaCASILLAS[cont].set(kakuro[x][y])
-                    cont+=1
-        '''
+        if solveKakuro(kakuro):
+            print("Solucionado")
+ 
         self.createGraphicKakuro(_newWin,kakuro)
-        
-        #print(copiaKakuroOriginal)
-        
-        #solveBruteForce(copiaKakuroOriginal, [0,0])
-        
+
     def verificarSolucion(self, listaCASILLAS, kakuro):
 
         listaSOLUCIONES=[]
