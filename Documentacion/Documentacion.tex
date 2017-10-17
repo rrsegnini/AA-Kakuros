@@ -20,7 +20,7 @@ Email: daniel.alvarado.bonilla@gmail.com}
 \IEEEauthorblockN{Roberto Rojas Segnini}
 \IEEEauthorblockA{Instituto Tecnol\'ogico de Costa Rica\\Ingenier\'ia en Computaci\'on\\
 2016139072\\
-Email:rojassegniniroberto@gmail.com}
+Email: rojassegniniroberto@gmail.com}
 }
 \maketitle
 \begin{abstract}
@@ -29,7 +29,7 @@ Email:rojassegniniroberto@gmail.com}
 ACA VA EL ABSTRACT
 \end{abstract}
 \begin{IEEEkeywords}
-O Grande, Matriz, Algoritmo.
+Big O, Matrix, Algorithm, Kakuro, Backtracking, Permutations.
 \end{IEEEkeywords}
 \section{Introducci\'on}
 Existen muchi\'isimos tipos de algoritmos y un programador se define en cual tipo de algoritmo se escoge para resolver un determinado problema que tiene una variedad soluciones. Se debe entender el por qu\'e de la escogencia de este tipo. Es decir, en ocaciones no se quiere utilizar el algoritmo mas eficiente, esto no quiere decir que se tiene que utilizar un algoritmo mal fundamento, si no todo lo contrario, poder saber cuando se debe hacer uso de un algoritmo que no se basa en su eficiencia.\\
@@ -174,19 +174,44 @@ El algoritmo de backtracking explicado anteriormente es utilizado para resolver 
      	 			\State combinaciones = getCombinations()
      	 			\Comment retorna un vector de combinacinoes que vienen de un diccionario	
      	 			\If{sumUp esta en combinaciones}
-     	 					\State \Return
-     	 			\Else \State \Return []
+     	 					\State \Return [min de sumLeft y sumUp] si no []
      	 			\EndIf
      	 	\EndIf
      	 \Else
      	 		\State combinaciones = getCombinations()
-     	 		\For{por cada combinacion en combinaciones]
-     	 			\State Agregar cada valor a un vector llamado valores
+     	 		\For{por combinacion en combinaciones]}
+     	 			\State Agregar cada valor a un 
+     	 			\State vector llamado valoresUp
      	 		\EndFor
      	 \EndIf
-      	\EndIf
+     \If{el valor forma una suma horizontal}
+          	 	\If{SpacesLeft = 1}
+     	 			\If{Si es una intersecci\'on de dos sumas}
+     	 				\Return [sumLeft]
+     	 			\EndIf
+     	 	\If{SpacesUp =1}
+     	 			\If{si ambas sumas son iguales}
+     	 					\State \Return [sum]
+     	 			\Else
+     	 			 		\State \Return vac\'io
+     	 			\EndIf
+     	 	\Else
+     	 			\State combinaciones = getCombinations()
+     	 			\Comment retorna un vector de combinacinoes que vienen de un diccionario	
+     	 			\If{sumUp esta en combinaciones}
+     	 					\State \Return [min de sumLeft y sumUp] si no []
+     	 			\EndIf
+     	 	\EndIf
+     	 \Else
+     	 		\State combinaciones = getCombinations()
+     	 		\For{por combinacion en combinaciones]}
+     	 			\State Agregar cada valor a un 
+     	 			\State vector llamado valoresLeft
+     	 		\EndFor
+     	 \EndIf
+     	 \EndIf
       \EndIf
-      
+      \State \Return intersecci\'on entre valoresLeft y valoresRight
        \EndFunction
 \end{algorithmic}
 \end{algorithm}
@@ -200,16 +225,16 @@ Este algoritmo tiene en s\'i bastantes funciones  pequeñas. Cada una siendo fun
 \begin{enumerate}[I]
 \item SubstractVal() es una funci\'on que toma el lugar donde se puede colocar un valor$[1..9]$, recibe tambi\'en este valor que se utilizar\'a las sumas a las que pertenece, el mejor caso es que sea una intersecci\'on de dos sumas, asi la lista de valores seria menor. Toma esta posici\'on y se mueve ya sea de forma vertical u horizontal, hasta buscar la suma a la que pertenece esa posici\'on. Al encontrar el vector $v[sumaVertical,sumaHorizontal]$ se desplaza contando los espacios disponibles que tiene esta suma.  Esto es un comportamiento lineal, es decir $O(n)$ al recorrer una lista. Lo interesante de este algoritmo es que una vez obtenida la cantidad de espacios, se recorre de nuevo desde la posici\'on en la que se encuentra el vector v mencionado anteriormente, y suma los las casillas que ya tienen  un valor. Y por cada casilla que tenga un valor, se aumenta un contador llamado newSpaces. Este es otro comportamiento lineal, es decir hasta el momento es un $O(2n)$. Este paso es sumamente importante, por que resta a la suma que se tiene que llegar, lo que se tiene hasta el momento. En otras palabras, si se debe llegar a sumar un total de $27$ en cuatro espacios, y ya se tiene $2$ espacios utilizados, se toman los valores de estos dos espacios, se suman y luego se le restan al $27$. Si se ten\'ia $3$ y $7$ la nueva suma a la que se tiene que llegar es $17$. Por \'ultimo este numero y los espacios nuevos  $(2)$ son retornados. Hasta el momento se tiene $O(2n)$. \\
 Ver Algoritmo 3. 
-\item La funci\'on getValuesList es aquella que interpreta los valores retornados por substractVal(). Este primero revisa si dicha posici\'on donde se colocar\'a el valor es intersecci\'on de una suma en forma vertical y/o forma horizontal. Si pertenece a alguna de las anteriores, se verifica si tiene y si solo un espacio disponible, se utiliza una pequeña funcion la cu\'al retorna de un diccionario creado, donde este de llaves la cantidad de espacios disponibles, para cada de estas llaves tiene una llave secundaria la cual es la suma que puede formarse. Por \'ultimo, tiene un vector de vectores con las posibles combinaciones de valores para obtener esta suma en dicha cantidad de espacios.  Al obtenerla, se verifica que la suma, la cual es el unico valor que puede colocarse en la posici\'on dada, si no esta en estas combinaciones, se hace backtracking. Retorna una lista vac\'ia, donde el algoritmo principal ve que no tiene opciones que utilizar y se devuelve. Si la cantidad de espacios es diferente a uno, usando la funci\'on que obtiene las combinaciones, se agregan todos los valores posibles a una lista. Esto se hace para cada suma, siempre y cuando la posici\'on en la que se encuentra el algoritmo sea intersecci\'onTodo lo dicho anteriormente es de un orden lineal, sumando $O(2n + n)$. Esta funci\\on retorna este vector con los posibles valores que pueden ser utilizados y as\'i la funci\'on principal pruebe con estos.
+\item La funci\'on getValuesList es aquella que interpreta los valores retornados por substractVal(). Este primero revisa si dicha posici\'on donde se colocar\'a el valor es intersecci\'on de una suma en forma vertical y/o forma horizontal. Si pertenece a alguna de las anteriores, se verifica si tiene y si solo un espacio disponible, se utiliza una pequeña funcion la cu\'al retorna de un diccionario creado, donde este de llaves la cantidad de espacios disponibles, para cada de estas llaves tiene una llave secundaria la cual es la suma que puede formarse. Por \'ultimo, tiene un vector de vectores con las posibles combinaciones de valores para obtener esta suma en dicha cantidad de espacios.  Al obtenerla, se verifica que la suma, la cual es el unico valor que puede colocarse en la posici\'on dada, si no esta en estas combinaciones, se hace backtracking. Retorna una lista vac\'ia, donde el algoritmo principal ve que no tiene opciones que utilizar y se devuelve. Si la cantidad de espacios es diferente a uno, usando la funci\'on que obtiene las combinaciones, se agregan todos los valores posibles a una lista. Esto se hace para cada suma, siempre y cuando la posici\'on en la que se encuentra el algoritmo sea intersecci\'onTodo lo dicho anteriormente es de un orden lineal, sumando $O(2n + n)$. Esta funci\\on retorna este vector con los posibles valores que pueden ser utilizados y as\'i la funci\'on principal pruebe con estos.\\
+Ver Algoritmo 4.
 \end{enumerate}
-Este algoritmo, tiene en el, cuatro iteraciones de tipo $for$. Donde se, utilizan tres variables diferentes. Las ultimas dos iteraciones, utilizan la misma. Esta, podria considerarse constante ya que siempre usa el mismo tamaño (el kernel nunca cambia) pero para efectos del $O(f(n))$ se considero como una variable.  Al utilizar un $for$, siempre se tiene el siguiente orden: $1 + (n+1) + n$.  Cuando se hace el $int y = 1$ es una constante c, luego la comparacion se hace $n+1$ veces y por \'ultimo, se aumenta la variable $n$ veces. Bas\'andose en lo dicho anterior, el algoritmo se divide en cuatro partes $P$. La primera $P_1$ la dicha anteriormente, donde es la iteracion de mas afuera. El $P_2$ es el segundo $for$, el cual es del tamaño del ancho de la im\'agen. Y el \'ultimo, se podr\'ia decir que es $P_3(k)$, siendo k el tamaño del kernel utilizado. Se considera que donde ocurre el mayor tiempo de ejecuci\'on de operaciones es en $P_2$ y $P_3(k)$. El orden $P_2$ es: $P_3(k) x nc + nc + nc + nP_4 
-$, este $P_4$ es la funci\'on encargada de cambiar el pixel de la nueva imagen, donde se considera una constante $c$.  La parte $P_3(k) $ tiene dos ciclos internos (for) donde dependen de la varaible $k $, esta representa el tamaño del kernel utilizado para la convulusi\'on. Al analizar todo el algoritmo y no solo los bucles por separado, se considera que el orden de O grande es $O(n^4)$ al existir cuatro diferentes ciclos, donde dependen de la entrada, la cual, es la im\'agen a utilizar. \\
+El orden de la funci\'on de poda es de $O(n)$ ya que $3$ es una constante que no afecta el comportamiento de dicha funci\'on.
 \\
 Orden de $O(f(n))$ de Permutaciones:\\
 FALTA
 \\
 Orden de $O(f(n))$ de Backtracking:\\
-El algoritmo de Backtracking implementado se deduce que tiene un orden $O(n^k)$. $N$ es la cantidad de opciones que pueden colocarse en un determinado espacio del Kakuro. Al ser un \'arbol de soluciones, $N$ el nivel del nodo,  donde cada nodo tiene sus propios nodos, esto implica $n(n-1)(n-2)...(n-k+1)$. O grande considera el peor de los casos y este seria recorrer cada nodo hasta su ultimo nivel, es decir recorrer el \'arbol a profundidad. Siendo un comportamiento de $n^k$
+El algoritmo de Backtracking implementado se deduce que tiene un orden $O(n^k)$. $N$ es la cantidad de opciones que pueden colocarse en un determinado espacio del Kakuro. Al ser un \'arbol de soluciones, $N$ el nivel del nodo,  donde cada nodo tiene sus propios nodos, esto implica $n(n-1)(n-2)...(n-k+1)$. O grande considera el peor de los casos y este seria recorrer cada nodo hasta su ultimo nivel, es decir recorrer el \'arbol a profundidad. Siendo un comportamiento de $n^k$. Existe una funci\'on la cual recorre la matriz del Kakuro para encontrar una posici\'on libre, esta parte es $O(n^2)$. En total, $O(n^k + n^2)$ pero al como O Grande utiliza el peor de los casos, se concluye $O(n^k)$
 
 
 \section{Experimentos}
