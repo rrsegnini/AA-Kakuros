@@ -49,19 +49,16 @@ class KBoard():
                     self.board[i][j].setValue(random.choice(list_values))
                     list_values.remove(self.board[i][j].getValue())
                     enquiry_sum += self.board[i][j].getValue()
-                    
+
                     # ... reintegrated values
                     if len(exclude) > 0:
                         list_values.extend(exclude)
-                
-                    #self.print()
-                    #print("  ")
+
                 self.board[i][enquiry_start - 1].setHeader(enquiry_sum)
 
                 # ...
                 pointer += enquiry_start + enquiry_size + 1
 
-        #self.fillGaps()
         # ... complete the headers
         #self.print()
         #print('#############################################')
@@ -77,54 +74,7 @@ class KBoard():
                         self.board[i - counter][j].setHeader(enquiry_sum, KCell.CELL_RANGE_Y)
                     counter = 1
                     enquiry_sum = 0
-                    
-        
 
-
-    def fillGaps(self):
-        
-        for i in range(1, self.size - 1):  # let first and last row without data
-            # ...
-            pointer = 1
-
-            while pointer + self.MIN_INQUIRY < self.size:
-                enquiry_sum = 0
-                enquiry_start = random.randrange(pointer, self.size - self.MIN_INQUIRY)
-                enquiry_size = random.randrange(self.MIN_INQUIRY, self.size - enquiry_start)
-                list_values = list(range(1, 10))
-
-                for j in range(enquiry_start, enquiry_start + enquiry_size):
-                    # ... checks horizontal values
-                    exclude = []
-                    check = 1
-                    while self.board[i - check][j].getType() == KCell.CELL_DATA:
-                        if list_values.count(self.board[i - check][j].getValue()):
-                            list_values.remove(self.board[i - check][j].getValue())
-                            exclude.append(self.board[i - check][j].getValue())
-                        check += 1
-
-                    # ... no values to assign
-                    if len(list_values) == 0:
-                        break
-
-                    # ...
-                    if self.board[i][j].getType() == KCell.CELL_HEADER:
-                        if self.board[i][j].header[0]:
-                            self.board[i+1][j].setValue(random.choice(list_values))
-                            list_values.remove(self.board[i][j].getValue())
-                            enquiry_sum += self.board[i][j].getValue()
-                    
-                    # ... reintegrated values
-                    if len(exclude) > 0:
-                        list_values.extend(exclude)
-                
-                    self.print()
-                    print("  ")
-                self.board[i][enquiry_start - 1].setHeader(enquiry_sum)
-
-                # ...
-                pointer += enquiry_start + enquiry_size + 1
-        
     def getNextUnsolvedLine(self):
         x = 0
         y = 0

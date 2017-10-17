@@ -3,6 +3,13 @@ import random
 from KakuroGenerator import *
 import json
 import datetime
+import threading
+from functools import partial
+from multiprocessing.pool import Pool
+from queue import Queue
+from threading import Thread
+
+
 timesFinished = 0
 
 CombinationsDic = {2:{3:[[1,2]],
@@ -632,10 +639,10 @@ def getValues(_kakuro,_position,leftSum,upSum):
 
 
 def solveKakuro(kakuro):
-    global timesFinished
+    global timesFinished, totalThreads
     if noEmptySpaces(kakuro):
         timesFinished+= 1
-        if isKakuroSolved(kakuro):
+        if isKakuroSolved(kakuro):      
             return True
         else:
             return False
@@ -650,18 +657,104 @@ def solveKakuro(kakuro):
         values = deleteRepeatedValues(kakuro,getIntersection(getValues(kakuro,position,num1,num2),getValuesList(num1,num2,kakuro,position)),position)
         if values == []:
             return False
+        
+        queue = Queue()
+        #p = Pool(1)
+        #print(totalThreads)
         for i in range(len(values)):
             value = values[i]
             kakuro[row][column] = value
-            if solveKakuro(kakuro):
-                return True
+            status = [False,]
+            '''
+            #if len(threading.enumerate())-1<totalThreads:
+            if totalThreads<100:
+                print(len(threading.enumerate()))
+                worker = ThreadWorker(queue)
+                worker.daemon = True
+                worker.start()
+                #logger.info('Queueing {}'.format(link))
+                queue.put((kakuro,))
+                
+                
+            else:        
+                #value = values[i]
+                #kakuro[row][column] = value
+                if solveKakuro(kakuro):
+                    return True
+                else:
+                    kakuro[row][column] = BLANK_SPACE
+            
+            if totalThreads < 8:
+                print(totalThreads)
+                p.map(solveKakuro, kakuro)
+                totalThreads+=1
             else:
-                kakuro[row][column] = BLANK_SPACE
+                print("La otra")
+                #value = values[i]
+                #kakuro[row][column] = value
+                if solveKakuro(kakuro):
+                    return True
+                else:
+                    kakuro[row][column] = BLANK_SPACE
+            '''
+            if len(threading.enumerate())-1<totalThreads:
+        
+                thread = threading.Thread(target=testValues,
+                                args=(values, kakuro, row, column, status,i))
 
+                #thread = threading.Thread(target=solveKakuro,
+                                #args=(kakuro,))
+                thread.start()
+                thread.join()
+
+                if status[0]==True:
+                    return True
+                #else:
+                    #kakuro[row][column] = BLANK_SPACE
+            else:        
+                #value = values[i]
+                #kakuro[row][column] = value
+                if solveKakuro(kakuro):
+                    return True
+                else:
+                    kakuro[row][column] = BLANK_SPACE
+           
         return False
 
-#gets random value
 
+def testValues(values, kakuro, row, column, status, i):
+    value = values[i]
+    kakuro[row][column] = value
+    if solveKakuro(kakuro):
+        status[0] = True
+        return True
+    else:
+        kakuro[row][column] = BLANK_SPACE
+
+class ThreadWorker(Thread):
+    def __init__(self, queue):
+        Thread.__init__(self)
+        self.queue = queue
+
+    def run(self):
+        while True:
+           # Get the work from the queue and expand the tuple
+            kakuro = self.queue.get()
+            solveKakuro(kakuro)
+            
+            #if solveKakuro(kakuro):
+                #self.queue.task_done()
+             #   return True
+            #else:
+             #   kakuro[row][column] = BLANK_SPACE
+             #   self.queue.task_done()
+
+            self.queue.task_done()
+
+
+
+
+#gets random value   
 def substractVal(kakuro,position,sum,left):
     newSum = 0
     newSpaces = 0
@@ -910,18 +1003,11 @@ kakuroTest = [[0,0,0,0,0,0,0,0,0,0,0],
 #kakurosaved = loadKakuros()
 #printMatrix(kakurosaved)
 #print(datetime.datetime.now().time())
-'''
-startTime = datetime.datetime.now()
-if solveKakuro(kakuroHard):
-    print("Solucionado")
-    #print(datetime.datetime.now().time())
-    #print(timesFinished)
 
-finishTime = datetime.datetime.now()
-delta = finishTime - startTime
-print (int(delta.total_seconds() * 1000))
-'''
+
+
 suma=0
+
 for i in range(0, 1000):
     kakuroHard = [[0,0,[7,0],[17,0],0,0,0,0,0,[17,0],[28,0],0,0,0,[3,0],[4,0],[16,0],0,[7,0],[23,0]],
               [0,[16,13],-1,-1,[4,0],0,[23,0],[4,0],[16,11],-1,-1,0,0,[0,10],-1,-1,-1,[24,13],-1,-1],
@@ -943,7 +1029,7 @@ for i in range(0, 1000):
               [[0,13],-1,-1,-1,[16,0],[3,0],[17,0],0,[0,10],-1,-1,[4,26],-1,-1,-1,-1,-1,[16,7],-1,-1],
               [[0,28],-1,-1,-1,-1,-1,-1,0,0,[0,19],-1,-1,-1,-1,-1,[0,20],-1,-1,-1,-1],
               [[0,11],-1,-1,[0,19],-1,-1,-1,0,0,[0,9],-1,-1,0,0,0,0,[0,16],-1,-1,0]]
-    #totalThreads = 8
+    totalThreads = 2
     startTime = datetime.datetime.now()
     if solveKakuro(kakuroHard):
         #print("Solucionado")
